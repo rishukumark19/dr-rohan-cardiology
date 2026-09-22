@@ -8,7 +8,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-surface py-space-xl pb-24 md:pb-space-xl">
       <div className="max-w-3xl mx-auto px-margin">
         <h1 className="text-headline-md font-display font-bold text-on-surface mb-space-lg">Patient Privacy Policy</h1>
-        <div className="prose prose-slate max-w-none text-body-md text-secondary leading-relaxed flex flex-col gap-space-md">
+        <div className="text-body-md text-secondary leading-relaxed flex flex-col gap-space-md">
           <p>This website is operated by the practice of {doctor.name}, {doctor.title} (NMC Reg. {doctor.nmc}), and is committed to protecting the privacy and confidentiality of all patient information.</p>
           <h2 className="text-title-md font-display font-bold text-on-surface">Information We Collect</h2>
           <p>We collect only the information necessary to provide appointment booking and clinical coordination services: patient name, mobile number, and preferred appointment details. This information is used solely to confirm and coordinate your clinical appointment.</p>

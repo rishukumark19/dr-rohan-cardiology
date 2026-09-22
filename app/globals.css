@@ -1,7 +1,139 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════
+   CLINICAL RADIANCE — DESIGN SYSTEM TOKENS (Tailwind v4)
+   ═══════════════════════════════════════════════════════ */
+@theme {
+  /* ── Color tokens ───────────────────────────────────── */
+  --color-surface: #faf8ff;
+  --color-surface-dim: #d2d9f4;
+  --color-surface-bright: #faf8ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #eaedff;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-container-highest: #dae2fd;
+  --color-surface-variant: #dae2fd;
+  --color-surface-tint: #00677d;
+  --color-on-surface: #131b2e;
+  --color-on-surface-variant: #3d494d;
+  --color-inverse-surface: #283044;
+  --color-inverse-on-surface: #eef0ff;
+  --color-background: #faf8ff;
+  --color-on-background: #131b2e;
+  --color-outline: #6d797e;
+  --color-outline-variant: #bcc9ce;
+
+  --color-primary: #00677d;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #00b4d8;
+  --color-on-primary-container: #00414f;
+  --color-primary-fixed: #b3ebff;
+  --color-primary-fixed-dim: #4cd6fb;
+  --color-on-primary-fixed: #001f27;
+  --color-on-primary-fixed-variant: #004e5f;
+  --color-inverse-primary: #4cd6fb;
+
+  --color-secondary: #515f78;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d2e0fe;
+  --color-on-secondary-container: #55637d;
+  --color-secondary-fixed: #d6e3ff;
+  --color-secondary-fixed-dim: #b9c7e4;
+  --color-on-secondary-fixed: #0d1c32;
+  --color-on-secondary-fixed-variant: #39475f;
+
+  --color-tertiary: #006c49;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #19bc84;
+  --color-on-tertiary-container: #00442d;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* ── Border radius ──────────────────────────────────── */
+  --radius-DEFAULT: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 1.5rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
+
+  /* ── Spacing ────────────────────────────────────────── */
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-margin: 2rem;
+
+  /* ── Fonts ──────────────────────────────────────────── */
+  --font-family-display: "Plus Jakarta Sans", sans-serif;
+  --font-family-body: "Inter", sans-serif;
+  --font-family-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+
+  /* ── Font sizes (Clinical Radiance type scale) ──────── */
+  --font-size-display-hero: 64px;
+  --line-height-display-hero: 72px;
+  --font-size-display-hero-mobile: 38px;
+  --line-height-display-hero-mobile: 44px;
+  --font-size-headline-lg: 40px;
+  --line-height-headline-lg: 48px;
+  --font-size-headline-lg-mobile: 28px;
+  --line-height-headline-lg-mobile: 36px;
+  --font-size-headline-md: 28px;
+  --line-height-headline-md: 36px;
+  --font-size-headline-sm: 20px;
+  --line-height-headline-sm: 28px;
+  --font-size-title-md: 18px;
+  --line-height-title-md: 26px;
+  --font-size-body-lg: 18px;
+  --line-height-body-lg: 30px;
+  --font-size-body-md: 15px;
+  --line-height-body-md: 24px;
+  --font-size-body-sm: 13px;
+  --line-height-body-sm: 20px;
+  --font-size-label-lg: 15px;
+  --line-height-label-lg: 22px;
+  --font-size-label-md: 13px;
+  --line-height-label-md: 18px;
+  --font-size-label-sm: 11px;
+  --line-height-label-sm: 16px;
+
+  /* ── Box shadows ────────────────────────────────────── */
+  --shadow-glow-cyan: 0 8px 24px -4px rgba(0, 180, 216, 0.45);
+  --shadow-glow-cyan-sm: 0 4px 16px -4px rgba(0, 180, 216, 0.35);
+  --shadow-card: 0 10px 30px -10px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 20px 40px -12px rgba(0, 180, 216, 0.2);
+  --shadow-nav: 0 2px 12px -2px rgba(19, 27, 46, 0.04);
+
+  /* ── Animations ─────────────────────────────────────── */
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-ping-slow: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════ */
 @layer base {
   html {
     overscroll-behavior: none;
@@ -10,44 +142,36 @@
   }
 
   body {
-    background-color: #faf8ff;
-    color: #131b2e;
-    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-family-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* iPhone notch safe area utilities */
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  .pt-safe {
-    padding-top: env(safe-area-inset-top, 0px);
+  /* Text selection */
+  ::selection {
+    background-color: var(--color-primary-fixed);
+    color: var(--color-on-primary-fixed);
   }
 
-  /* Hide scrollbars but keep scroll functionality */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Global scrollbar style (non-hidden contexts) */
-  ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: #bcc9ce;
+    background: var(--color-outline-variant);
     border-radius: 9999px;
   }
 
-  /* Material Symbols Outlined font */
+  /* iPhone notch safe area */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pt-safe  { padding-top: env(safe-area-inset-top, 0px); }
+
+  /* Hide scrollbar */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Material Symbols Outlined */
   .material-symbols-outlined {
     font-family: "Material Symbols Outlined";
     font-weight: normal;
@@ -67,24 +191,151 @@
     user-select: none;
   }
 
-  /* Filled icon variant */
   .material-symbols-filled {
     font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
   }
 }
 
+/* ═══════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════ */
 @layer utilities {
-  /* Snap scroll for horizontal carousels */
-  .snap-x-mandatory {
-    scroll-snap-type: x mandatory;
-  }
-  .snap-start {
-    scroll-snap-align: start;
-  }
+  .snap-x-mandatory { scroll-snap-type: x mandatory; }
+  .snap-start       { scroll-snap-align: start; }
 
-  /* Text selection color using brand */
-  ::selection {
-    background-color: #b3ebff;
-    color: #001f27;
-  }
+  /* Typography scale helpers */
+  .text-display-hero         { font-size: 64px; line-height: 72px; font-weight: 800; letter-spacing: -0.03em; }
+  .text-display-hero-mobile  { font-size: 38px; line-height: 44px; font-weight: 800; }
+  .text-headline-lg          { font-size: 40px; line-height: 48px; font-weight: 700; }
+  .text-headline-lg-mobile   { font-size: 28px; line-height: 36px; font-weight: 700; }
+  .text-headline-md          { font-size: 28px; line-height: 36px; font-weight: 700; }
+  .text-headline-sm          { font-size: 20px; line-height: 28px; font-weight: 600; }
+  .text-title-md             { font-size: 18px; line-height: 26px; font-weight: 600; }
+  .text-body-lg              { font-size: 18px; line-height: 30px; font-weight: 400; }
+  .text-body-md              { font-size: 15px; line-height: 24px; font-weight: 400; }
+  .text-body-sm              { font-size: 13px; line-height: 20px; font-weight: 400; }
+  .text-label-lg             { font-size: 15px; line-height: 22px; font-weight: 600; }
+  .text-label-md             { font-size: 13px; line-height: 18px; font-weight: 600; }
+  .text-label-sm             { font-size: 11px; line-height: 16px; font-weight: 700; }
+
+  /* Font family helpers */
+  .font-display { font-family: "Plus Jakarta Sans", sans-serif; }
+  .font-body    { font-family: "Inter", sans-serif; }
+
+  /* Shadow helpers */
+  .shadow-glow-cyan    { box-shadow: 0 8px 24px -4px rgba(0, 180, 216, 0.45); }
+  .shadow-glow-cyan-sm { box-shadow: 0 4px 16px -4px rgba(0, 180, 216, 0.35); }
+  .shadow-card         { box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.05); }
+  .shadow-card-hover   { box-shadow: 0 20px 40px -12px rgba(0, 180, 216, 0.2); }
+  .shadow-nav          { box-shadow: 0 2px 12px -2px rgba(19, 27, 46, 0.04); }
+
+  /* Border radius helpers (matching Stitch tokens) */
+  .rounded-DEFAULT { border-radius: 1rem; }
+  .rounded-sm      { border-radius: 0.5rem; }
+  .rounded-md-tok  { border-radius: 1.5rem; }
+  .rounded-lg-tok  { border-radius: 2rem; }
+
+  /* Spacing tokens as padding/margin helpers */
+  .px-margin   { padding-left: 2rem; padding-right: 2rem; }
+  .px-gutter   { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .py-space-xs { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+  .py-space-sm { padding-top: 0.5rem;  padding-bottom: 0.5rem; }
+  .py-space-md { padding-top: 1rem;    padding-bottom: 1rem; }
+  .py-space-lg { padding-top: 1.5rem;  padding-bottom: 1.5rem; }
+  .py-space-xl { padding-top: 2.5rem;  padding-bottom: 2.5rem; }
+  .px-space-xs { padding-left: 0.25rem; padding-right: 0.25rem; }
+  .px-space-sm { padding-left: 0.5rem;  padding-right: 0.5rem; }
+  .px-space-md { padding-left: 1rem;    padding-right: 1rem; }
+  .px-space-lg { padding-left: 1.5rem;  padding-right: 1.5rem; }
+  .px-space-xl { padding-left: 2.5rem;  padding-right: 2.5rem; }
+  .p-space-xs  { padding: 0.25rem; }
+  .p-space-sm  { padding: 0.5rem; }
+  .p-space-md  { padding: 1rem; }
+  .p-space-lg  { padding: 1.5rem; }
+  .p-space-xl  { padding: 2.5rem; }
+  .gap-space-xs { gap: 0.25rem; }
+  .gap-space-sm { gap: 0.5rem; }
+  .gap-space-md { gap: 1rem; }
+  .gap-space-lg { gap: 1.5rem; }
+  .gap-space-xl { gap: 2.5rem; }
+  .mt-space-xs  { margin-top: 0.25rem; }
+  .mt-space-sm  { margin-top: 0.5rem; }
+  .mt-space-md  { margin-top: 1rem; }
+  .mt-space-lg  { margin-top: 1.5rem; }
+  .mt-space-xl  { margin-top: 2.5rem; }
+  .mb-space-xs  { margin-bottom: 0.25rem; }
+  .mb-space-sm  { margin-bottom: 0.5rem; }
+  .mb-space-md  { margin-bottom: 1rem; }
+  .mb-space-lg  { margin-bottom: 1.5rem; }
+  .mb-space-xl  { margin-bottom: 2.5rem; }
+
+  /* Color utilities — Clinical Radiance full token set */
+  /* Surface */
+  .bg-surface                { background-color: #faf8ff; }
+  .bg-surface-dim            { background-color: #d2d9f4; }
+  .bg-surface-bright         { background-color: #faf8ff; }
+  .bg-surface-container-lowest { background-color: #ffffff; }
+  .bg-surface-container-low  { background-color: #f2f3ff; }
+  .bg-surface-container      { background-color: #eaedff; }
+  .bg-surface-container-high { background-color: #e2e7ff; }
+  .bg-surface-container-highest { background-color: #dae2fd; }
+  .bg-surface-variant        { background-color: #dae2fd; }
+  .bg-inverse-surface        { background-color: #283044; }
+  .text-surface-bright       { color: #faf8ff; }
+  .text-on-surface           { color: #131b2e; }
+  .text-on-surface-variant   { color: #3d494d; }
+  .text-inverse-on-surface   { color: #eef0ff; }
+  .text-outline              { color: #6d797e; }
+  .text-outline-variant      { color: #bcc9ce; }
+  .border-outline-variant     { border-color: #bcc9ce; }
+  .border-outline             { border-color: #6d797e; }
+  .border-surface-container   { border-color: #eaedff; }
+  /* Primary */
+  .bg-primary                { background-color: #00677d; }
+  .bg-primary-container      { background-color: #00b4d8; }
+  .bg-primary-fixed          { background-color: #b3ebff; }
+  .bg-primary-fixed-dim      { background-color: #4cd6fb; }
+  .text-primary              { color: #00677d; }
+  .text-primary-container    { color: #00b4d8; }
+  .text-primary-fixed        { color: #b3ebff; }
+  .text-primary-fixed-dim    { color: #4cd6fb; }
+  .text-on-primary           { color: #ffffff; }
+  .text-on-primary-container { color: #00414f; }
+  .text-on-primary-fixed     { color: #001f27; }
+  .text-on-primary-fixed-variant { color: #004e5f; }
+  .text-inverse-primary      { color: #4cd6fb; }
+  /* Secondary */
+  .bg-secondary              { background-color: #515f78; }
+  .bg-secondary-container    { background-color: #d2e0fe; }
+  .bg-secondary-fixed        { background-color: #d6e3ff; }
+  .bg-secondary-fixed-dim    { background-color: #b9c7e4; }
+  .text-secondary            { color: #515f78; }
+  .text-on-secondary         { color: #ffffff; }
+  .text-on-secondary-container { color: #55637d; }
+  .text-secondary-fixed      { color: #d6e3ff; }
+  .text-secondary-fixed-dim  { color: #b9c7e4; }
+  .text-on-secondary-fixed   { color: #0d1c32; }
+  .text-on-secondary-fixed-variant { color: #39475f; }
+  /* Tertiary */
+  .bg-tertiary               { background-color: #006c49; }
+  .bg-tertiary-container     { background-color: #19bc84; }
+  .bg-tertiary-fixed         { background-color: #6ffbbe; }
+  .bg-tertiary-fixed-dim     { background-color: #4edea3; }
+  .text-tertiary             { color: #006c49; }
+  .text-on-tertiary          { color: #ffffff; }
+  .text-on-tertiary-container { color: #00442d; }
+  .text-tertiary-fixed       { color: #6ffbbe; }
+  .text-tertiary-fixed-dim   { color: #4edea3; }
+  .text-on-tertiary-fixed    { color: #002113; }
+  .text-on-tertiary-fixed-variant { color: #005236; }
+  /* Error */
+  .bg-error                  { background-color: #ba1a1a; }
+  .bg-error-container        { background-color: #ffdad6; }
+  .text-error                { color: #ba1a1a; }
+  .text-on-error             { color: #ffffff; }
+  .text-on-error-container   { color: #93000a; }
+
+  /* Animation utilities */
+  .animate-fade-in  { animation: fadeIn 0.3s ease-out; }
+  .animate-slide-up { animation: slideUp 0.3s ease-out; }
 }

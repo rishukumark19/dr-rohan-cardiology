@@ -339,3 +339,51 @@
   .animate-fade-in  { animation: fadeIn 0.3s ease-out; }
   .animate-slide-up { animation: slideUp 0.3s ease-out; }
 }
+
+/* ── Keyframes ────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Mobile 375px safety ──────────────────────────────── */
+/* Prevent text overflow on very small screens */
+@media (max-width: 390px) {
+  .text-headline-lg      { font-size: clamp(1.5rem, 7vw, 2.5rem); }
+  .text-headline-lg-mobile { font-size: clamp(1.5rem, 7.5vw, 2rem); }
+  .text-display-hero-mobile { font-size: clamp(2.5rem, 14vw, 4rem); }
+  /* Ensure booking wizard doesn't overflow on 375px */
+  .max-w-2xl { max-width: 100%; }
+}
+
+/* Safe area bottom inset (notched phones, bottom bars) */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 1rem);
+}
+
+/* Hide scrollbar for horizontal scroll strips */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Print-friendly OPD pass */
+@media print {
+  header, footer, nav, .mobile-bottom-bar, .floating-whatsapp, #cookie-consent { display: none !important; }
+  .shadow-card, .shadow-xl { box-shadow: none !important; }
+  body { background: white !important; }
+  .bg-inverse-surface { background: #1a1a2e !important; }
+}
+
+/* Reduced motion — respect system preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+

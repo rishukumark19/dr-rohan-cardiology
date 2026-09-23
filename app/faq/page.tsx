@@ -1,182 +1,194 @@
 "use client";
-import { useState, useMemo } from "react";
-
-const CATEGORIES = [
-  "All",
-  "First Visit & Consultation",
-  "Heart Health & Prevention",
-  "Procedures & Angioplasty",
-  "Medications & Lifestyle",
-  "Booking & Appointments",
-  "Video OPD",
-  "Insurance & Fees",
-  "Family Care & Recovery",
-];
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { doctor } from "@/config/doctor";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const FAQS = [
-  { category: "First Visit & Consultation", q: "What should I bring to my first consultation with Dr. Sharma?", a: "Please bring all prior ECG print strips, echocardiogram or angiogram CDs/reports, current medication blister strips (not just the prescription paper), and your Aadhaar or ID card. If you have a family history of heart disease, write down the details beforehand. Coming prepared allows us to maximise your 20-minute consultation window." },
-  { category: "First Visit & Consultation", q: "How long is a typical consultation?", a: "Dr. Sharma maintains a strict 20–30 minute slot per patient. He does not rush or overbook. You will receive a clear explanation of your ECG findings, medication plan, and next steps — in both Hindi and English if needed." },
-  { category: "Booking & Appointments", q: "How do I book an appointment?", a: "You can book online via our Book Appointment page, WhatsApp Sister Neha (our Coordinator) directly, call our clinic desk, or request a slot and we confirm within 10 minutes." },
-  { category: "Booking & Appointments", q: "How much advance notice do I need to book?", a: "Same-day slots are available at GK-1 (limited). For Max Saket and Medanta, we recommend booking 1–2 days in advance. Video OPD slots are available with very short notice." },
-  { category: "Insurance & Fees", q: "Does Dr. Sharma accept insurance or TPA cashless?", a: "At Max Super Speciality Hospital Saket, TPA cashless facility is active for most major insurers. At the GK-1 private clinic, consultations are cash/UPI and require self-payment. Insurance reimbursement papers are provided on request." },
-  { category: "Insurance & Fees", q: "What are the consultation fees?", a: "GK-1 Clinic: ₹1,500 (includes 7-day follow-up WhatsApp access). Max Saket: ₹1,600 (hospital OPD billing). Medanta: ₹1,800 (prior booking required). Video OPD: ₹1,200 (with digital NMC e-prescription)." },
-  { category: "Procedures & Angioplasty", q: "What is trans-radial angioplasty and why is it better?", a: "Trans-radial angioplasty is performed via the radial artery in the wrist rather than the groin. Advantages include: no prolonged bed rest, ability to walk within 3 hours, significantly lower bleeding risk, and often same-day discharge. Dr. Sharma is a high-volume trans-radial specialist." },
-  { category: "Procedures & Angioplasty", q: "What is the difference between a drug-eluting stent and a bare-metal stent?", a: "Drug-eluting stents (DES) have a medication coating that prevents re-narrowing (restenosis) of the artery. They are now the standard of care and have significantly better long-term outcomes. Dr. Sharma uses only CE-marked or FDA-approved DES for all coronary interventions." },
-  { category: "Heart Health & Prevention", q: "What is a coronary calcium score and should I get one?", a: "A coronary CT calcium score (CAC) measures calcified plaque in your arteries — before symptoms appear. It is recommended for people aged 40–70 with borderline risk factors (mild hypertension, slightly elevated cholesterol, family history). It takes 5 minutes and uses low-dose radiation." },
-  { category: "Heart Health & Prevention", q: "What are the warning signs that I need to see a cardiologist urgently?", a: "Seek same-day or next-day urgent evaluation for: chest tightness or pressure lasting more than 5 minutes, unexplained breathlessness on mild exertion, palpitations lasting over 30 seconds, or syncope (fainting) episodes. Sudden crushing chest pain with cold sweat = call 102 immediately, do not wait for OPD." },
-  { category: "Medications & Lifestyle", q: "Do I need to stop blood thinners before a procedure?", a: "This depends entirely on the procedure type and the specific medication. Never stop blood thinners (aspirin, clopidogrel, warfarin, rivaroxaban) without consulting Dr. Sharma or your treating physician first. Abrupt cessation can trigger a heart attack or stroke in high-risk patients." },
-  { category: "Video OPD", q: "How does the Video OPD consultation work?", a: "Book your slot online or via WhatsApp. At the appointment time, you will receive a secure video link on WhatsApp. The 20-minute encrypted HD call covers history, prior reports, and a management plan. Within 15 minutes of the call, an NMC-compliant digital e-prescription is delivered to your WhatsApp." },
-  { category: "Video OPD", q: "Can I get a second opinion via video without having to physically visit?", a: "Yes. Send your reports (ECG PDF, echo report, blood panel) to our WhatsApp number beforehand. Dr. Sharma will review them before the call and provide a structured second opinion with clear recommendations." },
-  { category: "Family Care & Recovery", q: "What should a family member expect after a pacemaker implantation?", a: "In the first week: limit left arm lifting above shoulder level. Avoid driving for 2–4 weeks. No intense chest or shoulder exercise for 6 weeks. The wound site should be kept dry for 7 days. Call Sister Neha immediately if there is swelling, redness, or fever above 38°C." },
-  { category: "Family Care & Recovery", q: "What diet should a patient follow after angioplasty?", a: "Low-salt diet (less than 5g/day), avoid trans-fats, increase omega-3 rich foods (fatty fish, walnuts, flaxseed), and limit refined carbohydrates. A detailed printed diet sheet is provided at the time of discharge. A follow-up dietary consultation can be arranged via video." },
+  { category: "Booking", q: "How do I book an appointment with Dr. Sharma?", a: "Three easy ways: (1) Use the 'Book Appointment' button on this website — our 7-step wizard takes under 2 minutes. (2) WhatsApp Sister Neha directly on the number at the bottom of this page. (3) Call the clinic number during OPD hours. Confirmation is sent via WhatsApp within 10 minutes." },
+  { category: "Booking", q: "Do I need an appointment before visiting the clinic?", a: "Yes, we strongly recommend booking in advance. Walk-in patients are seen only if slots are available. Prior booking guarantees your time, avoids long waiting, and ensures Sister Neha can complete pre-consultation vitals before you see the doctor." },
+  { category: "Booking", q: "Can I request a specific consultation time?", a: "Yes. Our booking wizard lets you choose your preferred date and time window. Requests are processed on a first-come basis. For urgent same-day requests, WhatsApp Sister Neha directly — she handles priority bookings personally." },
+  { category: "New Patients", q: "What should I bring for my first consultation?", a: "Carry: (1) All prior ECG strips and Echo CDs. (2) Recent blood reports (lipid profile, HbA1c, creatinine, TSH). (3) Your current medication blister strips — not just the prescription. (4) Aadhaar card or photo ID. (5) Insurance/TPA card if applicable. See our full Preparation Guide for details." },
+  { category: "New Patients", q: "How early should I arrive before my appointment?", a: "Please arrive 15 minutes before your scheduled time. This allows Sister Neha time to record your baseline BP, SpO2, pulse, and weight — which Dr. Sharma reviews before entering the consultation room." },
+  { category: "Locations", q: "Where does Dr. Sharma consult?", a: `Dr. Sharma consults at ${doctor.clinics.filter(c => !c.isVirtual).map(c => c.shortName).join(", ")}, and conducts Video OPD consultations from Monday to Saturday, 8:30 PM–10 PM. Visit our Locations page for the full week-wise schedule and directions.` },
+  { category: "Locations", q: "Does Dr. Sharma consult in Gurugram?", a: "Yes. Dr. Sharma visits Medanta — The Medicity, Gurugram on alternate Saturdays, 10:30 AM–2:00 PM. Prior booking is mandatory for Medanta slots. WhatsApp Sister Neha to check upcoming availability." },
+  { category: "Video Consultation", q: "How does a video consultation work?", a: "Book using the 'Video Consultation' option in our booking wizard. Sister Neha will send a secure HD video link to your WhatsApp 15 minutes before your slot. Prescription and investigation orders are shared on WhatsApp within 10 minutes of the session ending. NMC-compliant digital Rx included." },
+  { category: "Video Consultation", q: "Can I share prior reports during a video OPD?", a: "Yes. WhatsApp your ECG, Echo, or blood report images to Sister Neha at least 2 hours before your video slot. Dr. Sharma reviews reports before starting the session." },
+  { category: "Existing Patients", q: "Can an existing patient book a follow-up online?", a: "Yes. Select 'Existing Patient' in Step 1 of the booking wizard. Enter your registered mobile number. Sister Neha will pull up your previous records automatically. Follow-up consultations are 15 minutes; new consultations are 25–30 minutes." },
+  { category: "Existing Patients", q: "I have a query between appointments. What should I do?", a: "WhatsApp Sister Neha for minor queries (lab results, medication doubts, travel precautions). For new symptoms or anything clinical, please book a proper consultation slot. Dr. Sharma does not provide medical advice via WhatsApp directly." },
+  { category: "Payments", q: "What is the consultation fee and how do I pay?", a: `Fees: GK-1 Clinic — ₹${doctor.clinics[0].fee.toLocaleString()}. Max Saket — ₹${doctor.clinics[1].fee.toLocaleString()}. Medanta — ₹${doctor.clinics[2].fee.toLocaleString()}. Video OPD — ₹${doctor.clinics[3].fee.toLocaleString()}. Payment is collected at the clinic via UPI or cash. TPA/insurance cashless is available at Max Saket. No advance payment required for booking.` },
+  { category: "Rescheduling", q: "Can I reschedule my appointment?", a: "Yes. Use the 'Manage Appointment' link in your confirmation WhatsApp message or visit the Appointment page on this website. You can reschedule up to 4 hours before your slot. For urgent changes, WhatsApp Sister Neha directly." },
+  { category: "Cancellation", q: "How do I cancel my appointment?", a: "You can cancel via the Appointment Management page or by WhatsApp-ing Sister Neha. Please cancel at least 2 hours before your slot so it can be offered to another patient. There is no cancellation charge." },
+  { category: "Booking", q: "Can I contact the clinic through WhatsApp?", a: `Yes. Our Care Coordinator ${doctor.coordinator.name} manages the clinic WhatsApp desk and responds to all booking, scheduling, and general queries. The number is ${doctor.phone}. Available Mon–Sat, 9 AM–9 PM.` },
 ];
 
-export default function FAQPage() {
-  const [query, setQuery] = useState("");
+const CATEGORIES = ["All", ...Array.from(new Set(FAQS.map((f) => f.category)))];
+
+function FAQContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialQ = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(initialQ);
   const [activeCategory, setActiveCategory] = useState("All");
-  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set());
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const filtered = useMemo(() => {
-    return FAQS.filter((faq) => {
-      const matchCategory = activeCategory === "All" || faq.category === activeCategory;
-      const matchSearch =
-        !query.trim() ||
-        faq.q.toLowerCase().includes(query.toLowerCase()) ||
-        faq.a.toLowerCase().includes(query.toLowerCase()) ||
-        faq.category.toLowerCase().includes(query.toLowerCase());
-      return matchCategory && matchSearch;
-    });
-  }, [query, activeCategory]);
+  // Sync query to URL params
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (query) params.set("q", query);
+    else params.delete("q");
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [query]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function toggleFaq(idx: number) {
-    setOpenFaqs((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
-      return next;
-    });
-  }
+  const filtered = FAQS.filter((f) => {
+    const matchCat = activeCategory === "All" || f.category === activeCategory;
+    const matchQ = !query || f.q.toLowerCase().includes(query.toLowerCase()) || f.a.toLowerCase().includes(query.toLowerCase());
+    return matchCat && matchQ;
+  });
 
-  function expandAll() {
-    setOpenFaqs(new Set(filtered.map((_, i) => i)));
-  }
+  return (
+    <>
+      {/* Search */}
+      <div className="relative mb-space-lg max-w-xl">
+        <span className="absolute left-space-md top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-[20px]">search</span>
+        <input
+          id="faq-search"
+          type="search"
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setOpenIndex(null); }}
+          placeholder="Search questions about booking, fees, locations…"
+          className="w-full pl-12 pr-space-md py-3.5 rounded-full bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+        />
+        {query && (
+          <button onClick={() => setQuery("")} className="absolute right-space-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        )}
+      </div>
 
-  function collapseAll() {
-    setOpenFaqs(new Set());
-  }
+      {/* Category filter */}
+      <div className="flex flex-wrap gap-space-xs mb-space-lg">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => { setActiveCategory(cat); setOpenIndex(null); }}
+            className={`px-space-md py-1.5 rounded-full text-label-sm font-display font-bold transition-all ${activeCategory === cat ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}
+          >
+            {cat}
+          </button>
+        ))}
+        <span className="ml-auto text-label-sm text-on-surface-variant self-center">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
+      </div>
+
+      {/* FAQ accordion */}
+      <div className="flex flex-col gap-space-xs">
+        {filtered.length === 0 && (
+          <div className="flex flex-col items-center gap-space-md py-space-xl text-center">
+            <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
+            <p className="text-body-md text-on-surface-variant">No questions match &ldquo;{query}&rdquo;</p>
+            <a
+              href={buildWhatsAppUrl({ purpose: "inquiry" })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90"
+            >
+              <span className="material-symbols-outlined text-[18px]">chat</span>
+              Ask Sister Neha on WhatsApp
+            </a>
+          </div>
+        )}
+        {filtered.map((faq, i) => {
+          const isOpen = openIndex === i;
+          return (
+            <div key={i} className={`bg-surface-container-lowest rounded-lg shadow-card overflow-hidden transition-all ${isOpen ? "shadow-card-hover" : ""}`}>
+              <button
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+                className="w-full flex items-center justify-between gap-space-md px-space-lg py-space-md text-left group"
+                aria-expanded={isOpen}
+              >
+                <div className="flex items-start gap-space-md">
+                  <span className={`text-label-sm font-display font-bold px-space-xs py-0.5 rounded-full shrink-0 mt-0.5 ${
+                    faq.category === "Booking" ? "bg-primary-fixed text-on-primary-fixed" :
+                    faq.category === "Payments" ? "bg-secondary-container text-on-secondary-container" :
+                    faq.category === "Locations" ? "bg-tertiary-fixed text-on-tertiary-fixed" :
+                    "bg-surface-container text-on-surface-variant"
+                  }`}>{faq.category}</span>
+                  <span className="text-label-lg font-display font-semibold text-on-surface group-hover:text-primary transition-colors">{faq.q}</span>
+                </div>
+                <span className={`material-symbols-outlined text-[20px] text-outline shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
+                  expand_more
+                </span>
+              </button>
+              {isOpen && (
+                <div className="px-space-lg pb-space-md border-t border-surface-container">
+                  <p className="text-body-md text-secondary leading-relaxed pt-space-md">{faq.a}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+
+export default function FAQPage() {
+  // FAQ JSON-LD schema for Google rich snippets
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
 
   return (
     <div className="flex flex-col w-full pb-24 md:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       {/* Hero */}
-      <section className="relative overflow-hidden bg-surface py-space-xl">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-primary-container/20 to-transparent blur-3xl rounded-full -translate-y-1/2" />
-        </div>
-        <div className="max-w-4xl mx-auto px-margin text-center relative">
+      <section className="bg-surface py-space-xl">
+        <div className="max-w-5xl mx-auto px-margin">
           <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-space-md shadow-card">
-            <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
-            Clinical Knowledge & Patient Guidance
+            <span className="material-symbols-outlined text-[16px]">help</span>
+            {FAQS.length} answered questions
           </div>
-          <h1 className="text-headline-lg-mobile md:text-headline-lg font-display font-bold text-on-surface tracking-tight mb-space-md">
+          <h1 className="text-headline-lg-mobile md:text-headline-lg font-display font-bold text-on-surface tracking-tight mb-space-sm">
             Frequently Asked Questions
           </h1>
-          <p className="text-body-lg text-secondary mb-space-lg max-w-2xl mx-auto">
-            Evidence-based answers reviewed by Dr. Sharma. Search or browse by category.
+          <p className="text-body-lg text-secondary max-w-2xl">
+            Questions patients ask before booking with {doctor.shortName}. If you don&apos;t find your answer here, WhatsApp Sister Neha directly.
           </p>
-
-          {/* Search bar */}
-          <div className="max-w-2xl mx-auto bg-surface-container-lowest rounded-full shadow-card flex items-center px-space-md py-1.5 gap-space-sm">
-            <span className="material-symbols-outlined text-primary text-[22px]">search</span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search questions, symptoms, medications, procedures..."
-              className="flex-1 bg-transparent text-on-surface text-body-md placeholder:text-outline focus:outline-none py-2"
-            />
-            {query && (
-              <button onClick={() => setQuery("")} className="text-outline hover:text-on-surface transition-colors">
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
-            )}
-          </div>
         </div>
       </section>
 
-      {/* Category filter */}
-      <section className="bg-surface border-b border-outline-variant sticky top-20 z-30">
-        <div className="max-w-7xl mx-auto px-margin py-space-xs overflow-x-auto no-scrollbar">
-          <div className="flex gap-space-xs min-w-max">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-space-md py-1.5 rounded-full text-label-md font-display font-semibold whitespace-nowrap transition-all ${
-                  activeCategory === cat
-                    ? "bg-inverse-surface text-inverse-on-surface shadow-sm"
-                    : "bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+      <section className="py-space-xl bg-surface-container-low flex-1">
+        <div className="max-w-5xl mx-auto px-margin">
+          <Suspense fallback={<div className="h-12 bg-surface-container-high rounded-full animate-pulse mb-space-lg" />}>
+            <FAQContent />
+          </Suspense>
         </div>
       </section>
 
-      {/* FAQ list */}
-      <section className="py-space-xl bg-surface-container-low">
-        <div className="max-w-4xl mx-auto px-margin">
-          <div className="flex items-center justify-between mb-space-md">
-            <span className="text-body-sm text-on-surface-variant font-display font-semibold">
-              {filtered.length} {filtered.length === 1 ? "question" : "questions"} found
-            </span>
-            <div className="flex gap-space-xs">
-              <button onClick={expandAll} className="text-primary text-label-sm font-display font-semibold hover:underline">
-                Expand All
-              </button>
-              <span className="text-outline">•</span>
-              <button onClick={collapseAll} className="text-primary text-label-sm font-display font-semibold hover:underline">
-                Collapse All
-              </button>
-            </div>
-          </div>
-
-          {filtered.length === 0 ? (
-            <div className="text-center py-space-xl flex flex-col items-center gap-space-md bg-surface-container-lowest rounded-xl shadow-card">
-              <span className="material-symbols-outlined text-[48px] text-outline">search_off</span>
-              <p className="text-title-md font-display font-bold text-on-surface">No results for &ldquo;{query}&rdquo;</p>
-              <p className="text-body-md text-on-surface-variant">Try a broader search term, or browse by category above.</p>
-              <button onClick={() => { setQuery(""); setActiveCategory("All"); }} className="text-primary text-label-md font-display font-semibold hover:underline">
-                Clear filters
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-space-sm">
-              {filtered.map((faq, idx) => (
-                <div key={idx} className="bg-surface-container-lowest rounded-lg shadow-card overflow-hidden">
-                  <button
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full flex items-center justify-between p-space-md text-left gap-space-md"
-                    aria-expanded={openFaqs.has(idx)}
-                  >
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-label-sm font-display font-semibold text-primary uppercase tracking-wider">{faq.category}</span>
-                      <span className="text-label-lg font-display font-bold text-on-surface">{faq.q}</span>
-                    </div>
-                    <span className={`material-symbols-outlined text-secondary transition-transform duration-200 shrink-0 ${openFaqs.has(idx) ? "rotate-180" : ""}`}>
-                      expand_more
-                    </span>
-                  </button>
-                  {openFaqs.has(idx) && (
-                    <div className="px-space-md pb-space-md pt-0 border-t border-surface-container">
-                      <p className="text-body-md text-secondary leading-relaxed pt-space-sm">{faq.a}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+      {/* CTA */}
+      <section className="py-space-xl bg-surface">
+        <div className="max-w-4xl mx-auto px-margin text-center">
+          <h2 className="text-headline-sm font-display font-bold text-on-surface mb-space-sm">Still have a question?</h2>
+          <p className="text-body-md text-on-surface-variant mb-space-lg">Our Care Coordinator responds within minutes on WhatsApp.</p>
+          <a
+            href={buildWhatsAppUrl({ purpose: "inquiry" })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 transition-all"
+          >
+            <span className="material-symbols-outlined text-[20px]">chat</span>
+            WhatsApp Sister {doctor.coordinator.name}
+          </a>
         </div>
       </section>
     </div>

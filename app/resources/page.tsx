@@ -9,13 +9,14 @@ export const metadata: Metadata = {
 };
 
 const articles = [
-  { category: "Diagnostic Guidance", icon: "ecg_heart", color: "text-primary bg-primary-container/15", title: "Understanding Your ECG & Echo: What Those Numbers & Waves Really Mean", desc: "A demystifying look at electrocardiograms and 2D-echocardiography reports, explaining ejection fraction and rhythm without alarming medical jargon.", time: "5 min read", date: "Oct 18, 2024" },
-  { category: "Symptom Triage", icon: "warning", color: "text-error bg-error-container/40", title: "When Should You See a Specialist? Red Flags vs. Routine Discomfort", desc: "From unexplained fatigue to subtle exertion breathlessness: how to distinguish everyday stress from signs that warrant prompt cardiac evaluation.", time: "4 min read", date: "Oct 12, 2024" },
-  { category: "Procedures & Stents", icon: "microbiology", color: "text-on-primary-fixed-variant bg-primary-fixed", title: "Trans-Radial Angioplasty: Why Wrist-Entry Changes the Recovery Journey", desc: "Why entering through the radial artery in the wrist allows patients to walk within 3 hours and facilitates safe same-day discharge.", time: "7 min read", date: "Sep 29, 2024" },
-  { category: "Medications & Safety", icon: "medication", color: "text-on-secondary-fixed bg-secondary-fixed", title: "Questions Every Patient Should Ask Before Starting Blood Thinners or Statins", desc: "Key questions regarding drug interactions, dental procedure precautions, dietary considerations, and blood pressure monitoring routines.", time: "5 min read", date: "Sep 15, 2024" },
-  { category: "Preventive Care", icon: "monitor_heart", color: "text-on-tertiary-container bg-tertiary-container/20", title: "Preventive Calcium Scoring: Evaluating Plaque Before Symptoms Appear", desc: "How low-dose CT coronary calcium scans help asymptomatic individuals in their 40s and 50s take proactive, lifesaving preventive steps.", time: "6 min read", date: "Aug 30, 2024" },
-  { category: "Family & Caregiving", icon: "volunteer_activism", color: "text-on-surface-variant bg-surface-container-highest", title: "Caregiver Guide: Supporting a Family Member Post-Angioplasty or Pacemaker", desc: "Practical, compassionate recommendations for families on diet adjustments, walking regimens, wound care, and when to call the clinic desk.", time: "8 min read", date: "Aug 14, 2024" },
+  { slug: "understanding-ecg-echo", category: "Diagnostic Guidance", icon: "ecg_heart", color: "text-primary bg-primary-container/15", title: "Understanding Your ECG & Echo: What Those Numbers & Waves Really Mean", desc: "A demystifying look at electrocardiograms and 2D-echocardiography reports, explaining ejection fraction and rhythm without alarming medical jargon.", time: "5 min read", date: "Oct 18, 2024" },
+  { slug: "when-to-see-specialist", category: "Symptom Triage", icon: "warning", color: "text-error bg-error-container/40", title: "When Should You See a Specialist? Red Flags vs. Routine Discomfort", desc: "From unexplained fatigue to subtle exertion breathlessness: how to distinguish everyday stress from signs that warrant prompt cardiac evaluation.", time: "4 min read", date: "Oct 12, 2024" },
+  { slug: "trans-radial-angioplasty", category: "Procedures & Stents", icon: "microbiology", color: "text-on-primary-fixed-variant bg-primary-fixed", title: "Trans-Radial Angioplasty: Why Wrist-Entry Changes the Recovery Journey", desc: "Why entering through the radial artery in the wrist allows patients to walk within 3 hours and facilitates safe same-day discharge.", time: "7 min read", date: "Sep 29, 2024" },
+  { slug: null, category: "Medications & Safety", icon: "medication", color: "text-on-secondary-fixed bg-secondary-fixed", title: "Questions Every Patient Should Ask Before Starting Blood Thinners or Statins", desc: "Key questions regarding drug interactions, dental procedure precautions, dietary considerations, and blood pressure monitoring routines.", time: "5 min read", date: "Sep 15, 2024" },
+  { slug: null, category: "Preventive Care", icon: "monitor_heart", color: "text-on-tertiary-container bg-tertiary-container/20", title: "Preventive Calcium Scoring: Evaluating Plaque Before Symptoms Appear", desc: "How low-dose CT coronary calcium scans help asymptomatic individuals in their 40s and 50s take proactive, lifesaving preventive steps.", time: "6 min read", date: "Aug 30, 2024" },
+  { slug: null, category: "Family & Caregiving", icon: "volunteer_activism", color: "text-on-surface-variant bg-surface-container-highest", title: "Caregiver Guide: Supporting a Family Member Post-Angioplasty or Pacemaker", desc: "Practical, compassionate recommendations for families on diet adjustments, walking regimens, wound care, and when to call the clinic desk.", time: "8 min read", date: "Aug 14, 2024" },
 ];
+
 
 export default function ResourcesPage() {
   return (
@@ -63,11 +64,18 @@ export default function ResourcesPage() {
                     <span className="flex items-center gap-1"><span className="material-symbols-outlined text-body-sm">schedule</span>{article.time}</span>
                     <span className="text-secondary font-display font-semibold">{article.date}</span>
                   </div>
-                  <div className="mt-2 text-primary text-label-sm font-display font-semibold flex items-center gap-1 group-hover:underline">
-                    Reviewed by {doctor.shortName} <span className="material-symbols-outlined text-label-sm">arrow_forward</span>
-                  </div>
+                  {article.slug ? (
+                    <Link href={`/resources/${article.slug}`} className="mt-2 text-primary text-label-sm font-display font-semibold flex items-center gap-1 group-hover:underline">
+                      Read Article <span className="material-symbols-outlined text-label-sm">arrow_forward</span>
+                    </Link>
+                  ) : (
+                    <div className="mt-2 text-outline text-label-sm font-display font-semibold flex items-center gap-1">
+                      Coming Soon <span className="material-symbols-outlined text-label-sm">lock_clock</span>
+                    </div>
+                  )}
                 </div>
               </article>
+
             ))}
           </div>
 

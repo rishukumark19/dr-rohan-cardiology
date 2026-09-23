@@ -32,14 +32,17 @@ function buildMapsUrl(clinic: typeof doctor.clinics[0]) {
 
 export default function BookConfirmationPage() {
   const [booking, setBooking] = useState<BookingData | null>(null);
-  const [printed, setPrinted] = useState(false);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem("dr-booking");
-      if (stored) setBooking(JSON.parse(stored));
+      if (stored) {
+        const parsed = JSON.parse(stored) as BookingData;
+        setTimeout(() => setBooking(parsed), 0);
+      }
     } catch {}
   }, []);
+
 
   const clinic = booking
     ? (doctor.clinics.find((c) => c.id === booking.clinicId) ?? doctor.clinics[0])

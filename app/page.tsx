@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { doctor } from "@/config/doctor";
-import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+
 
 export const metadata: Metadata = {
   title: `${doctor.name} — ${doctor.title} | New Delhi`,
@@ -33,10 +34,11 @@ export default function HomePage() {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-tertiary" />
                 </span>
                 <span className="text-label-sm font-display font-semibold text-on-surface">
-                  OPD Live Today — GK-1 Clinic, 4:30 PM &nbsp;•&nbsp;
-                  <strong className="text-tertiary">3 slots left</strong>
+                  OPD Today — GK-1 Clinic &nbsp;•&nbsp;
+                  <strong className="text-tertiary">Book Early</strong>
                 </span>
               </div>
+
 
               {/* Hero heading */}
               <h1 className="text-display-hero-mobile lg:text-display-hero font-display font-extrabold text-on-surface tracking-tight leading-none mb-space-md">
@@ -111,8 +113,9 @@ export default function HomePage() {
                 {/* Verified badge */}
                 <div className="absolute -bottom-2 right-4 z-20 flex items-center gap-1 bg-surface-container-lowest text-primary py-2 px-3 rounded-full shadow-card">
                   <span className="material-symbols-outlined text-[16px] text-tertiary material-symbols-filled">verified</span>
-                  <span className="text-label-sm font-display font-bold text-on-surface">AIIMS Gold Medal</span>
+                  <span className="text-label-sm font-display font-bold text-on-surface">DM Cardiology, AIIMS</span>
                 </div>
+
                 {/* Experience card */}
                 <div className="absolute -top-4 -left-4 z-20 bg-surface-container-lowest rounded-lg p-space-sm shadow-card">
                   <div className="text-display-hero-mobile font-display font-extrabold text-primary leading-none">

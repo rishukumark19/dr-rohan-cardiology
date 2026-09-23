@@ -93,10 +93,9 @@ export default function BookPage() {
   function handleSubmit() {
     if (!validateStep()) return;
     setLoading(true);
-    const token = `RS-${booking.clinicId.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const bookingId = `BK${Date.now().toString(36).toUpperCase()}`;
-
     setTimeout(() => {
+      const token = `RS-${booking.clinicId.toUpperCase()}-${(Math.floor(Math.random() * 9000) + 1000)}`;
+      const bookingId = `BK${(Date.now()).toString(36).toUpperCase()}`;
       saveBookingToStorage({ ...booking, token, bookingId });
       setLoading(false);
 

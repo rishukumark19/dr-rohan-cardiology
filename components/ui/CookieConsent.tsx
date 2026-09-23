@@ -8,8 +8,13 @@ export default function CookieConsent() {
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
-    if (!consent) setVisible(true);
+    // Use a callback form to avoid direct setState in effect body
+    if (!consent) {
+      const timer = setTimeout(() => setVisible(true), 0);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
 
   function accept() {
     localStorage.setItem("cookie-consent", "accepted");

@@ -4,7 +4,9 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
-import EmergencyBanner from "@/components/layout/EmergencyBanner";
+import CookieConsent from "@/components/ui/CookieConsent";
+import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
+import { Analytics } from "@vercel/analytics/react";
 import { doctor } from "@/config/doctor";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -86,6 +88,13 @@ export default function RootLayout({
     telephone: doctor.phone,
     url: doctor.seo.domain,
     image: `${doctor.seo.domain}/doctor-photo.jpg`,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: doctor.rating,
+      reviewCount: doctor.reviewCount.replace("+", "").replace(",", ""),
+      bestRating: "5",
+      worstRating: "1",
+    },
     address: {
       "@type": "PostalAddress",
       streetAddress: "E-24 Main Market Road, Greater Kailash 1",
@@ -104,21 +113,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${inter.variable}`}>
       <head>
-        {/* Material Symbols Outlined */}
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           rel="stylesheet"
         />
-        {/* JSON-LD Physician Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -128,7 +128,7 @@ export default function RootLayout({
         className="bg-surface text-on-surface antialiased"
         style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
       >
-        {/* Skip to content for accessibility */}
+        {/* Skip to content */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded-full focus:text-label-md"
@@ -137,7 +137,6 @@ export default function RootLayout({
         </a>
 
         <Header />
-        <EmergencyBanner />
 
         <main id="main-content" className="pt-20">
           {children}
@@ -145,6 +144,9 @@ export default function RootLayout({
 
         <Footer />
         <MobileBottomBar />
+        <FloatingWhatsApp />
+        <CookieConsent />
+        <Analytics />
       </body>
     </html>
   );

@@ -199,7 +199,7 @@ export default function HomePage() {
                 title: "WhatsApp Concierge",
                 desc: "Chat directly with Sister Neha, our Clinical Coordinator, to schedule at your convenience.",
                 cta: "Open WhatsApp",
-                href: buildWhatsAppUrl({ purpose: "coordinator" }),
+                href: buildWhatsAppUrl({ purpose: "inquiry" }),
                 color: "bg-tertiary text-on-tertiary",
                 badge: "Easiest",
                 external: true,

@@ -162,7 +162,7 @@ export default function LocationsPage() {
             </div>
             <div className="flex gap-space-xs w-full sm:w-auto">
               <a
-                href={buildWhatsAppUrl({ purpose: "coordinator" })}
+                href={buildWhatsAppUrl({ purpose: "inquiry" })}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-space-lg py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90 transition-all"

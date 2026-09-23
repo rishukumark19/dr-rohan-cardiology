@@ -12,6 +12,10 @@ export const doctor = {
   nmc: "#54219",
   photo: "/doctor-photo.jpg",
 
+  // Booking behaviour — change this to switch all booking logic
+  // "instant" | "confirmation" | "whatsapp" | "call"
+  bookingMode: "confirmation" as "instant" | "confirmation" | "whatsapp" | "call",
+
   // Key metrics
   experience: "15+",
   consultations: "18,000+",
@@ -34,6 +38,37 @@ export const doctor = {
     whatsapp: "919810123456",
   },
 
+  // Education timeline
+  education: [
+    { year: "2000–2005", degree: "MBBS", institution: "All India Institute of Medical Sciences (AIIMS), New Delhi", type: "Medical Degree" },
+    { year: "2005–2008", degree: "MD — General Medicine", institution: "AIIMS New Delhi", type: "Postgraduate" },
+    { year: "2008–2011", degree: "DM — Cardiology (Gold Medalist)", institution: "AIIMS New Delhi", type: "Super-Specialty" },
+    { year: "2011–2012", degree: "FSCAI Interventional Fellowship", institution: "Cleveland Clinic, Ohio, USA", type: "International Fellowship" },
+  ],
+
+  // Professional experience timeline
+  experience_timeline: [
+    { year: "2012–2015", role: "Assistant Professor & Senior Resident, Cardiology", institution: "AIIMS New Delhi", type: "Academic" },
+    { year: "2015–2020", role: "Consultant Interventional Cardiologist", institution: "Max Super Speciality Hospital, Saket", type: "Hospital" },
+    { year: "2020–Now", role: "Senior Consultant & Director", institution: "Sharma Heart & Vascular Clinic, GK-1", type: "Private Practice" },
+  ],
+
+  // Memberships
+  memberships: [
+    { name: "FACC", full: "Fellow, American College of Cardiology", country: "USA" },
+    { name: "FCSI", full: "Fellow, Cardiological Society of India", country: "India" },
+    { name: "FSCAI", full: "Fellow, Society for Cardiovascular Angiography & Interventions", country: "USA" },
+    { name: "CSI", full: "Cardiological Society of India — Delhi Chapter Member", country: "India" },
+    { name: "ISHI", full: "Indian Society of Hypertension", country: "India" },
+  ],
+
+  // Social / review links
+  social: {
+    googleReviews: "",
+    practo: "",
+    linkedin: "",
+  },
+
   // Consulting locations
   clinics: [
     {
@@ -45,6 +80,7 @@ export const doctor = {
       fee: 1500,
       days: "Tue, Thu & Sat",
       hours: "4:30 PM – 8:00 PM",
+      daysArray: [2, 4, 6], // JS day indexes: 0=Sun, 2=Tue, 4=Thu, 6=Sat
       mapsUrl: "https://maps.google.com/?q=Greater+Kailash+1+Market+New+Delhi",
       phone: "+91 9810123456",
       isVirtual: false,
@@ -62,6 +98,7 @@ export const doctor = {
       fee: 1600,
       days: "Mon, Wed & Fri",
       hours: "10:00 AM – 1:30 PM",
+      daysArray: [1, 3, 5], // Mon, Wed, Fri
       mapsUrl: "https://maps.google.com/?q=Max+Super+Speciality+Hospital+Saket+New+Delhi",
       phone: "+91 9810123456",
       isVirtual: false,
@@ -79,6 +116,7 @@ export const doctor = {
       fee: 1800,
       days: "Alternate Saturdays",
       hours: "10:30 AM – 2:00 PM",
+      daysArray: [6], // Saturday
       mapsUrl: "https://maps.google.com/?q=Medanta+The+Medicity+Gurugram",
       phone: "+91 9810123456",
       isVirtual: false,
@@ -96,6 +134,7 @@ export const doctor = {
       fee: 1200,
       days: "Mon – Sat",
       hours: "8:30 PM – 10:00 PM",
+      daysArray: [1, 2, 3, 4, 5, 6],
       mapsUrl: null,
       phone: null,
       isVirtual: true,
@@ -170,3 +209,5 @@ export const doctor = {
 
 export type Clinic = (typeof doctor.clinics)[0];
 export type Speciality = (typeof doctor.specialities)[0];
+export type Education = (typeof doctor.education)[0];
+export type ExperienceItem = (typeof doctor.experience_timeline)[0];

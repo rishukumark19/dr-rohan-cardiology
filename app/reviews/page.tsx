@@ -1,21 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { doctor } from "@/config/doctor";
+import { REVIEWS } from "@/config/content";
 
 export const metadata: Metadata = {
   title: "Patient Reviews & Stories",
-  description: `${doctor.reviewCount} verified patient reviews for ${doctor.name}. Real experiences from angioplasty, hypertension, pacemaker, and preventive cardiology patients.`,
+  description: `${doctor.reviewCount} verified patient reviews for ${doctor.name}. Real experiences from ${doctor.speciality.toLowerCase()} patients.`,
   alternates: { canonical: "/reviews" },
 };
-
-const reviews = [
-  { initials: "VG", name: "Vikram Grover", age: 58, procedure: "Trans-Radial Angioplasty", clinic: "Max Saket", rating: 5, date: "Oct 2024", quote: "Dr. Rohan did my stenting through the wrist. I was walking just 3 hours later and discharged the next morning. His warmth took away 90% of our family's anxiety. He called us himself the next day to check recovery." },
-  { initials: "AS", name: "Ananya Sengupta", age: 51, procedure: "Preventive Calcium Scoring", clinic: "GK-1 Clinic", rating: 5, date: "Sep 2024", quote: "Never felt rushed. Dr. Sharma sat with us for 25 minutes explaining every metric in Hindi and English. He actually removed two redundant medications prescribed elsewhere — that took clinical confidence and courage." },
-  { initials: "RK", name: "Rajesh Khanna", age: 54, procedure: "Post-Stent Follow-up", clinic: "Video OPD", rating: 5, date: "Sep 2024", quote: "Booked via WhatsApp, got confirmation in 8 minutes. The video call was crystal clear. Digital prescription arrived on WhatsApp within 10 minutes of the session ending. Sister Neha is exceptional — always responsive." },
-  { initials: "PD", name: "Priya Dhingra", age: 44, procedure: "Resistant Hypertension", clinic: "GK-1 Clinic", rating: 5, date: "Aug 2024", quote: "After 3 years of uncontrolled blood pressure with other doctors, Dr. Sharma identified a secondary cause in one visit. My BP is now perfectly controlled. I only wish I had come here sooner." },
-  { initials: "SM", name: "Suresh Malhotra", age: 63, procedure: "Pacemaker Implant", clinic: "Max Saket", rating: 5, date: "Jul 2024", quote: "Complex dual-chamber device done under local anaesthesia. Dr. Sharma explained the procedure to my entire family before and after. We are grateful for his steady hands and his human approach to medicine." },
-  { initials: "NB", name: "Nisha Bhat", age: 47, procedure: "Cardiac Risk Assessment (Video OPD)", clinic: "Video OPD", rating: 5, date: "Jul 2024", quote: "I live in Bengaluru and reached out for a second opinion on my father's angiogram report. Video consultation was thorough. Dr. Sharma flagged a stent overlap issue no one else had caught in 3 prior opinions." },
-];
 
 export default function ReviewsPage() {
   // AggregateRating + Review JSON-LD for Google star ratings in search results
@@ -28,9 +20,9 @@ export default function ReviewsPage() {
       ratingValue: doctor.rating,
       bestRating: "5",
       worstRating: "1",
-      reviewCount: "2100",
+      reviewCount: String(doctor.reviewCountRaw),
     },
-    review: reviews.map((r) => ({
+    review: REVIEWS.map((r) => ({
       "@type": "Review",
       author: { "@type": "Person", name: r.name },
       datePublished: r.date,
@@ -76,7 +68,7 @@ export default function ReviewsPage() {
 
           {/* Review cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
-            {reviews.map((r) => (
+            {REVIEWS.map((r) => (
               <article key={r.name} className="bg-white/10 backdrop-blur-sm rounded-xl p-space-lg flex flex-col justify-between hover:bg-white/15 transition-all duration-300">
                 <div>
                   <div className="flex items-center justify-between mb-space-md">
@@ -117,10 +109,10 @@ export default function ReviewsPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md">
             {[
-              { icon: "calendar_month", stat: doctor.experience, label: "Years Clinical Experience", color: "bg-primary-container/15 text-primary" },
-              { icon: "people", stat: doctor.consultations, label: "Patients Consulted", color: "bg-tertiary-container/20 text-tertiary" },
-              { icon: "medical_services", stat: doctor.procedures, label: "Procedures Performed", color: "bg-secondary-container text-on-secondary-container" },
-              { icon: "star", stat: doctor.satisfaction, label: "Patient Satisfaction Rate", color: "bg-primary-fixed text-on-primary-fixed" },
+              { icon: "calendar_month", stat: doctor.experience,    label: "Years Clinical Experience",   color: "bg-primary-container/15 text-primary" },
+              { icon: "people",         stat: doctor.consultations,  label: "Patients Consulted",          color: "bg-tertiary-container/20 text-tertiary" },
+              { icon: "medical_services",stat: doctor.procedures,   label: "Procedures Performed",        color: "bg-secondary-container text-on-secondary-container" },
+              { icon: "star",           stat: doctor.satisfaction,   label: "Patient Satisfaction Rate",  color: "bg-primary-fixed text-on-primary-fixed" },
             ].map((m) => (
               <div key={m.label} className="bg-surface-container-lowest rounded-xl p-space-lg text-center shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-space-sm ${m.color}`}>
@@ -132,14 +124,10 @@ export default function ReviewsPage() {
             ))}
           </div>
 
-          {/* Differentiators */}
+          {/* Differentiators from config */}
           <div className="mt-space-xl grid grid-cols-1 md:grid-cols-3 gap-space-md">
-            {[
-              { icon: "timer", title: "Unhurried 25-Minute Consultations", desc: "Every patient receives focused, uninterrupted time. No 5-minute OPDs.", color: "text-primary" },
-              { icon: "translate", title: "Bilingual — Hindi & English", desc: "Medical explanations in the language the patient is most comfortable with.", color: "text-tertiary" },
-              { icon: "verified", title: "NMC-Registered & FACC-Certified", desc: "International interventional cardiology fellowship from Cleveland Clinic, USA.", color: "text-secondary" },
-            ].map((d) => (
-              <div key={d.title} className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex items-start gap-space-md">
+            {doctor.differentiators.map((d) => (
+              <div key={d.title} className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex items-start gap-space-md hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
                 <span className={`material-symbols-outlined text-[28px] shrink-0 mt-0.5 ${d.color}`}>{d.icon}</span>
                 <div>
                   <div className="text-label-lg font-display font-bold text-on-surface">{d.title}</div>

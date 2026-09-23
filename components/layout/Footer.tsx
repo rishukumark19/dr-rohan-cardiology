@@ -20,7 +20,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-secondary-fixed-dim text-body-sm leading-relaxed max-w-sm">
-              {doctor.title} • {doctor.qualifications}. Specializing in trans-radial coronary interventions and cardiovascular care across {doctor.locationDesc}.
+              {doctor.title} • {doctor.qualifications}. {doctor.footerBio}
             </p>
             <div className="text-label-sm text-outline-variant">
               Delhi Medical Council (NMC) Reg:{" "}
@@ -113,7 +113,7 @@ export default function Footer() {
         {/* Copyright bar */}
         <div className="pt-space-md border-t border-outline/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm text-label-sm text-outline-variant">
           <div>
-            © {new Date().getFullYear()} {doctor.name} Cardiology Practice. All rights reserved.
+            © {new Date().getFullYear()} {doctor.name} {doctor.speciality} Practice. All rights reserved.
           </div>
           <div className="flex items-center gap-space-md">
             <Link href="/privacy" className="hover:text-surface-bright transition-colors">

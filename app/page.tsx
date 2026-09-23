@@ -5,7 +5,7 @@ import { doctor } from "@/config/doctor";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { getInitials } from "@/lib/utils";
 import NextOpdBadge from "@/components/ui/NextOpdBadge";
-import { FadeUp, StaggerGrid, StaggerItem } from "@/components/ui/Animations";
+import { FadeUp, StaggerGrid, StaggerItem, CountUp } from "@/components/ui/Animations";
 
 
 export const metadata: Metadata = {
@@ -49,17 +49,12 @@ export default function HomePage() {
                 {doctor.qualifications}. Practising across{" "}
                 <strong className="text-on-surface">{doctor.locationDesc}</strong> with{" "}
                 <strong className="text-on-surface">{doctor.experience} years</strong> of clinical
-                experience in interventional cardiac care. Unhurried 20-minute consultations.
+                experience. {doctor.heroTagline}
               </p>
 
               {/* Trust pills */}
               <div className="flex flex-wrap gap-space-xs mb-space-lg">
-                {[
-                  { icon: "schedule", text: `${doctor.experience} Yrs Practice` },
-                  { icon: "assignment_turned_in", text: `NMC ${doctor.nmc}` },
-                  { icon: "apartment", text: `Ex-${doctor.institution}` },
-                  { icon: "verified", text: "FACC (USA)" },
-                ].map((pill) => (
+                {doctor.trustPills.map((pill) => (
                   <span
                     key={pill.text}
                     className="inline-flex items-center gap-1 px-space-md py-1.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-display font-semibold shadow-card"
@@ -138,9 +133,10 @@ export default function HomePage() {
               <StaggerItem key={stat.label}>
                 <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-card flex flex-col justify-between h-full">
                   <div className="flex items-center justify-between">
-                    <span className={`text-display-hero-mobile font-display font-extrabold ${stat.color} leading-none`}>
-                      {doctor[stat.key]}
-                    </span>
+                    <CountUp
+                      value={doctor[stat.key]}
+                      className={`text-display-hero-mobile font-display font-extrabold ${stat.color} leading-none`}
+                    />
                     <span className={`material-symbols-outlined text-[22px] ${stat.color} opacity-50`}>{stat.icon}</span>
                   </div>
                   <div className="mt-space-sm">

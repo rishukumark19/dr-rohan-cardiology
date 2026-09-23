@@ -16,7 +16,48 @@ npm install
 
 ## Step 2 — Edit `config/doctor.ts`
 
-This is the **only file you need to change** for a new doctor deployment. Every page, component, SEO tag, and schema reads from this config.
+This is the **primary file** to change for a new doctor deployment. Every page, component, SEO tag, and schema reads from this config.
+
+### New fields added for full resellability:
+
+```typescript
+// Address (for schema.org structured data)
+city: "Mumbai",
+state: "Maharashtra",
+pincode: "400001",
+country: "IN",
+
+// Hero tagline (replaces hardcoded in-clinic copy)
+heroTagline: "Unhurried consultations in orthopaedic care.",
+
+// Trust pills — up to 4 shown in hero
+trustPills: [
+  { icon: "schedule", text: "12+ Yrs Practice" },
+  { icon: "verified",  text: "FACC (USA)" },
+],
+
+// About page bio paragraphs
+aboutBio: { p1: "First paragraph...", p2: "Second paragraph..." },
+
+// About page credential pills
+credentialPills: ["MBBS", "MS Orthopaedics", "FRCS (UK)"],
+
+// Hospital affiliations on About page
+hospitalAffiliations: [
+  { name: "KEM Hospital", role: "Senior Resident", icon: "school", color: "bg-primary-container/15 text-primary" },
+],
+
+// Why patients choose — on /reviews page
+differentiators: [
+  { icon: "timer", title: "Unhurried Consultations", desc: "...", color: "text-primary" },
+],
+
+// Footer bio
+footerBio: "Specializing in joint replacement and sports medicine across Mumbai.",
+
+// Consultation duration in minutes
+consultationDuration: 25,
+```
 
 ### Required fields to update:
 
@@ -85,6 +126,35 @@ memberships: [
   { name: "FACC", full: "Fellow, American College of Cardiology", country: "USA" },
 ],
 ```
+
+---
+
+## Step 2b — Edit `config/content.ts`
+
+This file contains the FAQ questions and patient reviews. Edit this to customise content without touching any TSX page files.
+
+```typescript
+// In config/content.ts
+export const FAQS = [
+  { category: "Booking", q: "How do I book?", a: "..." },
+  // Add/remove questions as needed
+];
+
+export const REVIEWS = [
+  {
+    initials: "AB",
+    name: "Arun Bose",
+    age: 52,
+    procedure: "Hip Replacement",
+    clinic: "KEM Hospital",
+    rating: 5,
+    date: "Oct 2024",
+    quote: "Excellent care...",
+  },
+];
+```
+
+> **Note:** Always get written patient consent before publishing names in reviews.
 
 ---
 
@@ -231,7 +301,9 @@ Recommended speciality palettes:
 ```
 dr-rohan-cardiology/
 ├── config/
-│   └── doctor.ts              ← Edit this for any new doctor
+│   ├── doctor.ts              ← Edit this for any new doctor
+│   ├── content.ts             ← Edit this for FAQs & patient reviews
+│   └── theme.ts               ← Reference palette for speciality colour changes
 ├── lib/
 │   └── whatsapp.ts            ← WhatsApp URL builder (don't edit)
 ├── app/
@@ -250,7 +322,10 @@ dr-rohan-cardiology/
 │   └── disclaimer/page.tsx    ← Medical disclaimer
 ├── components/
 │   ├── layout/                ← Header, Footer, MobileBottomBar
-│   └── ui/                    ← CookieConsent, FloatingWhatsApp, Animations
-└── public/
-    └── doctor-photo.jpg       ← Replace with real photo
+│   └── ui/                    ← CookieConsent, FloatingWhatsApp, Animations (CountUp)
+├── public/
+│   ├── doctor-photo.jpg       ← Replace with real photo
+│   ├── og-image.jpg           ← Replace with branded OG image
+│   └── robots.txt             ← Update sitemap URL before going live
+└── CHECKLIST.md               ← Client go-live checklist
 ```

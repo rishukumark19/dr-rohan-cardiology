@@ -43,12 +43,65 @@ export const doctor = {
   locationDesc: "South Delhi & NCR",  // City/area shown in hero bio — configurable per doctor
   languages: ["Hindi", "English"],
 
+  // Address fields — used in schema.org structured data
+  city: "New Delhi",
+  state: "Delhi",
+  pincode: "110048",
+  country: "IN",
+
   // Coordinator
   coordinator: {
     name: "Sister Neha",
     role: "Clinical Care Coordinator",
     whatsapp: "919810123456",
   },
+
+  // Consultation details
+  consultationDuration: 25,   // Minutes — used in copy like "25-minute consultations"
+
+  // Hero tagline — shown under qualifications on homepage
+  heroTagline: "Unhurried 20-minute consultations in interventional cardiac care.",
+
+  // Trust pills — shown under hero heading (configurable array)
+  trustPills: [
+    { icon: "schedule",              text: "15+ Yrs Practice" },
+    { icon: "assignment_turned_in",  text: "NMC #54219" },
+    { icon: "apartment",             text: "Ex-AIIMS New Delhi" },
+    { icon: "verified",              text: "FACC (USA)" },
+  ],
+
+  // Footer bio — short paragraph shown in footer column
+  footerBio: "Specializing in trans-radial coronary interventions and cardiovascular care across South Delhi & NCR.",
+
+  // About page bio — full bio paragraphs (keeps page code clean & resellable)
+  aboutBio: {
+    p1: "Dr. Rohan Sharma is a Senior Interventional Cardiologist with over 15 years of hands-on clinical experience in complex coronary interventions, preventive cardiology, and advanced cardiac device implantation. Trained at AIIMS New Delhi — one of India's most prestigious medical institutions — he is a Fellow of the American College of Cardiology (FACC) and the Cardiological Society of India (FCSI).",
+    p2: "Dr. Sharma is widely recognised for his expertise in trans-radial (wrist-entry) coronary angioplasty, enabling patients to walk within 3 hours of the procedure with same-day discharge in eligible cases. He conducts unhurried 20–30 minute consultations and communicates clinical findings in both Hindi and English, believing that informed patients make better health decisions.",
+  },
+
+  // About page credential pills — fully configurable
+  credentialPills: [
+    "MD, AIIMS New Delhi",
+    "DM Cardiology (Gold Medalist)",
+    "FACC — American College of Cardiology",
+    "FCSI — Cardiological Society of India",
+    "FSCAI — Interventional Cardiology",
+    "NMC #54219",
+  ],
+
+  // Hospital affiliations — shown on About page
+  hospitalAffiliations: [
+    { name: "AIIMS New Delhi",                        role: "Senior Resident & Fellowship Training",      icon: "school",          color: "bg-primary-container/15 text-primary" },
+    { name: "Max Super Speciality Hospital, Saket",   role: "Consultant Interventional Cardiologist",    icon: "local_hospital",  color: "bg-tertiary-container/20 text-tertiary" },
+    { name: "Medanta – The Medicity, Gurugram",       role: "Visiting Specialist",                       icon: "apartment",       color: "bg-secondary-container text-on-secondary-container" },
+  ],
+
+  // Why patients choose — differentiator points (shown on /reviews page)
+  differentiators: [
+    { icon: "timer",     title: "Unhurried Consultations",          desc: "Every patient receives focused, uninterrupted time. No 5-minute OPDs.", color: "text-primary" },
+    { icon: "translate", title: "Bilingual — Hindi & English",      desc: "Medical explanations in the language the patient is most comfortable with.", color: "text-tertiary" },
+    { icon: "verified",  title: "NMC-Registered & FACC-Certified",  desc: "International interventional cardiology fellowship from Cleveland Clinic, USA.", color: "text-secondary" },
+  ],
 
   // Education timeline
   education: [
@@ -261,3 +314,5 @@ export type Clinic = (typeof doctor.clinics)[0];
 export type Speciality = (typeof doctor.specialities)[0];
 export type Education = (typeof doctor.education)[0];
 export type ExperienceItem = (typeof doctor.experience_timeline)[0];
+export type HospitalAffiliation = (typeof doctor.hospitalAffiliations)[0];
+export type Differentiator = (typeof doctor.differentiators)[0];

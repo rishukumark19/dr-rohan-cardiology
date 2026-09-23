@@ -2,25 +2,8 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { doctor } from "@/config/doctor";
+import { FAQS } from "@/config/content";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-
-const FAQS = [
-  { category: "Booking", q: "How do I book an appointment with Dr. Sharma?", a: "Three easy ways: (1) Use the 'Book Appointment' button on this website — our 7-step wizard takes under 2 minutes. (2) WhatsApp Sister Neha directly on the number at the bottom of this page. (3) Call the clinic number during OPD hours. Confirmation is sent via WhatsApp within 10 minutes." },
-  { category: "Booking", q: "Do I need an appointment before visiting the clinic?", a: "Yes, we strongly recommend booking in advance. Walk-in patients are seen only if slots are available. Prior booking guarantees your time, avoids long waiting, and ensures Sister Neha can complete pre-consultation vitals before you see the doctor." },
-  { category: "Booking", q: "Can I request a specific consultation time?", a: "Yes. Our booking wizard lets you choose your preferred date and time window. Requests are processed on a first-come basis. For urgent same-day requests, WhatsApp Sister Neha directly — she handles priority bookings personally." },
-  { category: "New Patients", q: "What should I bring for my first consultation?", a: "Carry: (1) All prior ECG strips and Echo CDs. (2) Recent blood reports (lipid profile, HbA1c, creatinine, TSH). (3) Your current medication blister strips — not just the prescription. (4) Aadhaar card or photo ID. (5) Insurance/TPA card if applicable. See our full Preparation Guide for details." },
-  { category: "New Patients", q: "How early should I arrive before my appointment?", a: "Please arrive 15 minutes before your scheduled time. This allows Sister Neha time to record your baseline BP, SpO2, pulse, and weight — which Dr. Sharma reviews before entering the consultation room." },
-  { category: "Locations", q: "Where does Dr. Sharma consult?", a: `Dr. Sharma consults at ${doctor.clinics.filter(c => !c.isVirtual).map(c => c.shortName).join(", ")}, and conducts Video OPD consultations from Monday to Saturday, 8:30 PM–10 PM. Visit our Locations page for the full week-wise schedule and directions.` },
-  { category: "Locations", q: "Does Dr. Sharma consult in Gurugram?", a: "Yes. Dr. Sharma visits Medanta — The Medicity, Gurugram on alternate Saturdays, 10:30 AM–2:00 PM. Prior booking is mandatory for Medanta slots. WhatsApp Sister Neha to check upcoming availability." },
-  { category: "Video Consultation", q: "How does a video consultation work?", a: "Book using the 'Video Consultation' option in our booking wizard. Sister Neha will send a secure HD video link to your WhatsApp 15 minutes before your slot. Prescription and investigation orders are shared on WhatsApp within 10 minutes of the session ending. NMC-compliant digital Rx included." },
-  { category: "Video Consultation", q: "Can I share prior reports during a video OPD?", a: "Yes. WhatsApp your ECG, Echo, or blood report images to Sister Neha at least 2 hours before your video slot. Dr. Sharma reviews reports before starting the session." },
-  { category: "Existing Patients", q: "Can an existing patient book a follow-up online?", a: "Yes. Select 'Existing Patient' in Step 1 of the booking wizard. Enter your registered mobile number. Sister Neha will pull up your previous records automatically. Follow-up consultations are 15 minutes; new consultations are 25–30 minutes." },
-  { category: "Existing Patients", q: "I have a query between appointments. What should I do?", a: "WhatsApp Sister Neha for minor queries (lab results, medication doubts, travel precautions). For new symptoms or anything clinical, please book a proper consultation slot. Dr. Sharma does not provide medical advice via WhatsApp directly." },
-  { category: "Payments", q: "What is the consultation fee and how do I pay?", a: `Fees: GK-1 Clinic — ₹${doctor.clinics[0].fee.toLocaleString()}. Max Saket — ₹${doctor.clinics[1].fee.toLocaleString()}. Medanta — ₹${doctor.clinics[2].fee.toLocaleString()}. Video OPD — ₹${doctor.clinics[3].fee.toLocaleString()}. Payment is collected at the clinic via UPI or cash. TPA/insurance cashless is available at Max Saket. No advance payment required for booking.` },
-  { category: "Rescheduling", q: "Can I reschedule my appointment?", a: "Yes. Use the 'Manage Appointment' link in your confirmation WhatsApp message or visit the Appointment page on this website. You can reschedule up to 4 hours before your slot. For urgent changes, WhatsApp Sister Neha directly." },
-  { category: "Cancellation", q: "How do I cancel my appointment?", a: "You can cancel via the Appointment Management page or by WhatsApp-ing Sister Neha. Please cancel at least 2 hours before your slot so it can be offered to another patient. There is no cancellation charge." },
-  { category: "Booking", q: "Can I contact the clinic through WhatsApp?", a: `Yes. Our Care Coordinator ${doctor.coordinator.name} manages the clinic WhatsApp desk and responds to all booking, scheduling, and general queries. The number is ${doctor.phone}. Available Mon–Sat, 9 AM–9 PM.` },
-];
 
 const CATEGORIES = ["All", ...Array.from(new Set(FAQS.map((f) => f.category)))];
 
@@ -93,7 +76,7 @@ function FAQContent() {
               className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90"
             >
               <span className="material-symbols-outlined text-[18px]">chat</span>
-              Ask Sister Neha on WhatsApp
+              Ask {doctor.coordinator.name} on WhatsApp
             </a>
           </div>
         )}
@@ -162,7 +145,7 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="text-body-lg text-secondary max-w-2xl">
-            Questions patients ask before booking with {doctor.shortName}. If you don&apos;t find your answer here, WhatsApp Sister Neha directly.
+            Questions patients ask before booking with {doctor.shortName}. If you don&apos;t find your answer here, WhatsApp {doctor.coordinator.name} directly.
           </p>
         </div>
       </section>
@@ -187,7 +170,7 @@ export default function FAQPage() {
             className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 transition-all"
           >
             <span className="material-symbols-outlined text-[20px]">chat</span>
-            WhatsApp Sister {doctor.coordinator.name}
+            WhatsApp {doctor.coordinator.name}
           </a>
         </div>
       </section>

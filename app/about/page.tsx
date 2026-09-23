@@ -26,7 +26,6 @@ export default function AboutPage() {
               <div className="relative w-56 h-56 sm:w-72 sm:h-72">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary to-primary-container opacity-20 blur-xl" />
                 <div className="absolute inset-2 rounded-full bg-gradient-to-b from-primary-container to-primary shadow-inner opacity-80" />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <Image
                   src={doctor.photo}
                   alt={doctor.name}
@@ -58,15 +57,11 @@ export default function AboutPage() {
                 <h1 className="text-headline-lg-mobile md:text-headline-lg font-display font-extrabold text-on-surface tracking-tight">{doctor.name}</h1>
                 <p className="text-title-md font-display font-semibold text-primary mt-1">{doctor.qualifications}</p>
               </div>
-              <p className="text-body-lg text-secondary leading-relaxed">
-                {doctor.name} is a {doctor.title} with over {doctor.experience} years of hands-on clinical experience in complex coronary interventions, preventive cardiology, and advanced cardiac device implantation. Trained at {doctor.institution} — one of India&apos;s most prestigious medical institutions — he is a Fellow of the American College of Cardiology (FACC) and the Cardiological Society of India (FCSI).
-              </p>
-              <p className="text-body-md text-secondary leading-relaxed">
-                Dr. Sharma is widely recognised for his expertise in trans-radial (wrist-entry) coronary angioplasty, enabling patients to walk within 3 hours of the procedure with same-day discharge in eligible cases. He conducts unhurried 20–30 minute consultations and communicates clinical findings in both Hindi and English, believing that informed patients make better health decisions.
-              </p>
+              <p className="text-body-lg text-secondary leading-relaxed">{doctor.aboutBio.p1}</p>
+              <p className="text-body-md text-secondary leading-relaxed">{doctor.aboutBio.p2}</p>
               {/* Credential pills */}
               <div className="flex flex-wrap gap-space-xs">
-                {["MD, AIIMS New Delhi", "DM Cardiology (Gold Medalist)", "FACC — American College of Cardiology", "FCSI — Cardiological Society of India", "FSCAI — Interventional Cardiology", `NMC ${doctor.nmc}`].map((cred) => (
+                {doctor.credentialPills.map((cred) => (
                   <span key={cred} className="inline-flex items-center gap-1 px-space-md py-1.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-display font-semibold shadow-card">
                     <span className="material-symbols-outlined text-[12px] text-primary">verified</span>{cred}
                   </span>
@@ -81,7 +76,7 @@ export default function AboutPage() {
       <section className="py-space-xl bg-surface-container-low">
         <div className="max-w-5xl mx-auto px-margin">
           <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Academic Journey</div>
-          <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Education & Qualifications</h2>
+          <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Education &amp; Qualifications</h2>
           <div className="relative flex flex-col gap-space-md pl-space-xl">
             {/* Timeline line */}
             <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
@@ -142,11 +137,11 @@ export default function AboutPage() {
       {/* ── MEMBERSHIPS ──── */}
       <section className="py-space-xl bg-surface-container-low">
         <div className="max-w-5xl mx-auto px-margin">
-          <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">International & National Bodies</div>
+          <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">International &amp; National Bodies</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Professional Memberships</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
             {doctor.memberships.map((m) => (
-              <div key={m.name} className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex items-start gap-space-md">
+              <div key={m.name} className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex items-start gap-space-md hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
                 <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-display font-extrabold text-label-md shrink-0">
                   {m.name.slice(0, 1)}
                 </div>
@@ -164,14 +159,11 @@ export default function AboutPage() {
       {/* ── HOSPITAL AFFILIATIONS ──── */}
       <section className="py-space-xl bg-surface">
         <div className="max-w-5xl mx-auto px-margin">
+          <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Where He Works</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Hospital Affiliations</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
-            {[
-              { name: "AIIMS New Delhi", role: "Senior Resident & Fellowship Training", icon: "school", color: "bg-primary-container/15 text-primary" },
-              { name: "Max Super Speciality Hospital, Saket", role: "Consultant Interventional Cardiologist", icon: "local_hospital", color: "bg-tertiary-container/20 text-tertiary" },
-              { name: "Medanta – The Medicity, Gurugram", role: "Visiting Specialist", icon: "apartment", color: "bg-secondary-container text-on-secondary-container" },
-            ].map((h) => (
-              <div key={h.name} className="bg-surface-container-lowest p-space-md rounded-lg shadow-card">
+            {doctor.hospitalAffiliations.map((h) => (
+              <div key={h.name} className="bg-surface-container-lowest p-space-md rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-space-sm ${h.color}`}>
                   <span className="material-symbols-outlined text-[24px]">{h.icon}</span>
                 </div>

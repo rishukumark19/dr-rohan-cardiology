@@ -102,10 +102,10 @@ export default function RootLayout({
     address: {
       "@type": "PostalAddress",
       streetAddress: doctor.clinics[0].address.split(",").slice(0, 2).join(",").trim(),
-      addressLocality: "New Delhi",
-      addressRegion: "Delhi",
-      postalCode: "110048",
-      addressCountry: "IN",
+      addressLocality: doctor.city,
+      addressRegion: doctor.state,
+      postalCode: doctor.pincode,
+      addressCountry: doctor.country,
     },
     availableService: doctor.clinics.map((c) => ({
       "@type": "MedicalClinic",

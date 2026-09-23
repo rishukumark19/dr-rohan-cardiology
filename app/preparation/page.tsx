@@ -82,7 +82,7 @@ export default function PreparationPage() {
   ];
 
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
       {/* Hero */}
       <section className="bg-surface py-space-xl">
         <div className="max-w-5xl mx-auto px-margin">
@@ -113,9 +113,9 @@ export default function PreparationPage() {
       <section className="py-space-xl bg-surface-container-low">
         <div className="max-w-5xl mx-auto px-margin flex flex-col gap-space-lg">
           {sections.map((section) => (
-            <div key={section.title} className="bg-surface-container-lowest rounded-xl shadow-card p-space-lg">
+            <div key={section.title} className="bg-surface-container-lowest rounded-xl shadow-card p-4 sm:p-space-lg">
               <div className="flex items-center gap-space-md mb-space-md">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${section.color}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${section.color}`}>
                   <span className="material-symbols-outlined text-[24px]">{section.icon}</span>
                 </div>
                 <h2 className="text-headline-sm font-display font-bold text-on-surface">{section.title}</h2>
@@ -136,20 +136,20 @@ export default function PreparationPage() {
       {/* Emergency reminder + book CTA */}
       <section className="py-space-xl bg-surface">
         <div className="max-w-4xl mx-auto px-margin flex flex-col gap-space-md">
-          <div className="bg-error-container/60 rounded-xl p-space-lg flex flex-col sm:flex-row items-center gap-space-md">
+          <div className="bg-error-container/60 rounded-xl p-4 sm:p-space-lg flex flex-col sm:flex-row items-center gap-space-md text-center sm:text-left">
             <div className="w-12 h-12 rounded-full bg-error flex items-center justify-center text-on-error shrink-0">
               <span className="material-symbols-outlined text-[24px] material-symbols-filled">emergency</span>
             </div>
-            <div>
+            <div className="flex-1">
               <div className="text-label-md font-display font-bold text-error uppercase tracking-wider">If You Are in Active Distress</div>
               <p className="text-body-sm text-on-error-container">{doctor.emergency.message}</p>
             </div>
-            <a href="tel:102" className="shrink-0 px-space-lg py-2.5 rounded-full bg-error text-on-error text-label-md font-display font-bold hover:opacity-90 transition-all">
+            <a href="tel:102" className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center px-space-lg py-2.5 rounded-full bg-error text-on-error text-label-md font-display font-bold hover:opacity-90 transition-all min-h-[44px]">
               Call 102
             </a>
           </div>
-          <div className="text-center">
-            <Link href="/book" className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-95 transition-all">
+          <div className="text-center pt-2">
+            <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
               Book My Consultation
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
             </Link>

@@ -11,8 +11,8 @@ export default function NextOpdBadge() {
   const { label, clinicName, hours, isToday } = getNextOpdSummary(doctor.clinics);
 
   return (
-    <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container shadow-card mb-space-lg">
-      <span className="relative flex h-2 w-2">
+    <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-2xl sm:rounded-full bg-surface-container shadow-card mb-space-lg max-w-full">
+      <span className="relative flex h-2 w-2 shrink-0">
         <span
           className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
             isToday ? "bg-tertiary" : "bg-primary-container"
@@ -24,7 +24,7 @@ export default function NextOpdBadge() {
           }`}
         />
       </span>
-      <span className="text-label-sm font-display font-semibold text-on-surface">
+      <span className="text-label-sm font-display font-semibold text-on-surface leading-snug">
         {isToday ? "OPD Today" : `Next OPD: ${label}`}
         &nbsp;—&nbsp;
         {clinicName}&nbsp;•&nbsp;

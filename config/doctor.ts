@@ -29,9 +29,9 @@ export const doctor = {
   // Key stats section — configurable labels & sub-labels
   stats: [
     { key: "experience",    label: "Years Practice",       sub: "AIIMS & Senior Fellowships",   icon: "award_star",    color: "text-primary" },
-    { key: "consultations", label: "Consultations",        sub: "Clinical OPD Patients",         icon: "ecg_heart",     color: "text-tertiary" },
+    { key: "consultations", label: "Consultations",        sub: "Clinical OPD Patients",         icon: "ecg_heart",     color: "text-primary" },
     { key: "procedures",    label: "Radial Interventions", sub: "Wrist-entry Angioplasties",     icon: "blood_pressure", color: "text-primary" },
-    { key: "satisfaction",  label: "Satisfaction",         sub: "Over 2,100+ Reviews",           icon: "thumb_up",      color: "text-tertiary" },
+    { key: "satisfaction",  label: "Satisfaction",         sub: "Over 2,100+ Reviews",           icon: "thumb_up",      color: "text-primary" },
   ] as { key: "experience" | "consultations" | "procedures" | "satisfaction"; label: string; sub: string; icon: string; color: string }[],
 
   // Contact
@@ -92,15 +92,15 @@ export const doctor = {
   // Hospital affiliations — shown on About page
   hospitalAffiliations: [
     { name: "AIIMS New Delhi",                        role: "Senior Resident & Fellowship Training",      icon: "school",          color: "bg-primary-container/15 text-primary" },
-    { name: "Max Super Speciality Hospital, Saket",   role: "Consultant Interventional Cardiologist",    icon: "local_hospital",  color: "bg-tertiary-container/20 text-tertiary" },
-    { name: "Medanta – The Medicity, Gurugram",       role: "Visiting Specialist",                       icon: "apartment",       color: "bg-secondary-container text-on-secondary-container" },
+    { name: "Max Super Speciality Hospital, Saket",   role: "Consultant Interventional Cardiologist",    icon: "local_hospital",  color: "bg-primary-container/15 text-primary" },
+    { name: "Medanta – The Medicity, Gurugram",       role: "Visiting Specialist",                       icon: "apartment",       color: "bg-primary-container/15 text-primary" },
   ],
 
   // Why patients choose — differentiator points (shown on /reviews page)
   differentiators: [
     { icon: "timer",     title: "Unhurried Consultations",          desc: "Every patient receives focused, uninterrupted time. No 5-minute OPDs.", color: "text-primary" },
-    { icon: "translate", title: "Bilingual — Hindi & English",      desc: "Medical explanations in the language the patient is most comfortable with.", color: "text-tertiary" },
-    { icon: "verified",  title: "NMC-Registered & FACC-Certified",  desc: "International interventional cardiology fellowship from Cleveland Clinic, USA.", color: "text-secondary" },
+    { icon: "translate", title: "Bilingual — Hindi & English",      desc: "Medical explanations in the language the patient is most comfortable with.", color: "text-primary" },
+    { icon: "verified",  title: "NMC-Registered & FACC-Certified",  desc: "International interventional cardiology fellowship from Cleveland Clinic, USA.", color: "text-primary" },
   ],
 
   // Education timeline
@@ -149,14 +149,14 @@ export const doctor = {
       name: "Ananya Sengupta",
       detail: "Preventive Calcium Scoring • GK-1",
       quote: '"Never felt rushed. Dr. Sharma sat with us for 25 minutes explaining every metric in Hindi and English. He actually removed two redundant medications prescribed elsewhere."',
-      color: "bg-tertiary-container/20 text-tertiary-fixed",
+      color: "bg-primary-container/20 text-primary",
     },
     {
       initials: "RK",
       name: "Rajesh Khanna",
       detail: "Post-stent Follow-up • Video OPD",
       quote: '"Booked via WhatsApp, got confirmation in 8 minutes. The video call was crystal clear. Digital prescription arrived on WhatsApp within 10 minutes of the call ending."',
-      color: "bg-secondary-container/20 text-secondary-fixed-dim",
+      color: "bg-primary-container/20 text-primary",
     },
   ],
 

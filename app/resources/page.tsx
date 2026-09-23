@@ -20,7 +20,7 @@ const articles = [
 
 export default function ResourcesPage() {
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
       <section className="relative overflow-hidden bg-surface py-space-xl">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-primary-container/20 to-transparent blur-3xl rounded-full" />
@@ -48,9 +48,9 @@ export default function ResourcesPage() {
             </div>
             <span className="text-label-sm text-secondary font-display font-semibold">Displaying {articles.length} of 28 Verified Papers</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md sm:gap-space-lg">
             {articles.map((article) => (
-              <article key={article.title} className="group flex flex-col justify-between bg-surface-container-lowest rounded-lg p-space-lg shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
+              <article key={article.title} className="group flex flex-col justify-between bg-surface-container-lowest rounded-lg p-4 sm:p-space-lg shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1">
                 <div>
                   <div className="flex items-center justify-between mb-space-sm">
                     <span className={`text-label-sm font-display font-semibold px-space-sm py-1 rounded-full uppercase tracking-wider ${article.color}`}>{article.category}</span>
@@ -65,11 +65,11 @@ export default function ResourcesPage() {
                     <span className="text-secondary font-display font-semibold">{article.date}</span>
                   </div>
                   {article.slug ? (
-                    <Link href={`/resources/${article.slug}`} className="mt-2 text-primary text-label-sm font-display font-semibold flex items-center gap-1 group-hover:underline">
+                    <Link href={`/resources/${article.slug}`} className="mt-2 text-primary text-label-sm font-display font-semibold flex items-center gap-1 group-hover:underline py-1">
                       Read Article <span className="material-symbols-outlined text-label-sm">arrow_forward</span>
                     </Link>
                   ) : (
-                    <div className="mt-2 text-outline text-label-sm font-display font-semibold flex items-center gap-1">
+                    <div className="mt-2 text-outline text-label-sm font-display font-semibold flex items-center gap-1 py-1">
                       Coming Soon <span className="material-symbols-outlined text-label-sm">lock_clock</span>
                     </div>
                   )}
@@ -88,24 +88,24 @@ export default function ResourcesPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
               {[
-                { icon: "table_chart", color: "bg-primary-container/20 text-primary", label: "01", title: "First Visit Medication Log Sheet", desc: "Structured layout for brand names, generics, dosages.", size: "PDF • 240 KB" },
-                { icon: "monitor_heart", color: "bg-tertiary-container/20 text-tertiary", label: "02", title: "Home Blood Pressure & Pulse Daily Tracker", desc: "30-day morning and evening log with warning thresholds.", size: "PDF • 185 KB" },
-                { icon: "event_repeat", color: "bg-secondary-container text-on-secondary-container", label: "03", title: "Post-Procedure Recovery 14-Day Timeline", desc: "Daily milestones for walking, diet resumption, and dressing care.", size: "PDF • 310 KB" },
+                { icon: "table_chart", label: "01", title: "First Visit Medication Log Sheet", desc: "Structured layout for brand names, generics, dosages.", size: "PDF • 240 KB" },
+                { icon: "monitor_heart", label: "02", title: "Home Blood Pressure & Pulse Daily Tracker", desc: "30-day morning and evening log with warning thresholds.", size: "PDF • 185 KB" },
+                { icon: "event_repeat", label: "03", title: "Post-Procedure Recovery 14-Day Timeline", desc: "Daily milestones for walking, diet resumption, and dressing care.", size: "PDF • 310 KB" },
               ].map((d) => (
                 <div key={d.title} className="bg-surface-container-lowest rounded-lg p-space-md flex flex-col justify-between shadow-card hover:shadow-card-hover transition-all">
                   <div className="flex items-start gap-space-sm mb-space-md">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${d.color}`}>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-primary-container/20 text-primary">
                       <span className="material-symbols-outlined text-headline-sm">{d.icon}</span>
                     </div>
                     <div>
-                      <span className={`text-label-sm font-display font-semibold uppercase tracking-wide ${d.color.split(" ")[1]}`}>Document {d.label}</span>
+                      <span className="text-label-sm font-display font-bold text-primary uppercase tracking-wide">Document {d.label}</span>
                       <h4 className="text-title-md font-display font-bold text-on-surface leading-snug">{d.title}</h4>
                       <p className="text-body-sm text-secondary mt-1">{d.desc}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-space-sm border-t border-surface-container">
                     <span className="text-label-sm text-outline font-display">{d.size}</span>
-                    <button className="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-full bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface transition-colors text-label-md font-display font-semibold">
+                    <button className="inline-flex items-center justify-center gap-1.5 px-space-md py-2 rounded-full bg-surface-container hover:bg-primary hover:text-on-primary text-primary transition-colors text-label-md font-display font-semibold active:scale-[0.98] min-h-[44px]">
                       Download <span className="material-symbols-outlined text-body-sm">download</span>
                     </button>
                   </div>
@@ -118,12 +118,12 @@ export default function ResourcesPage() {
 
       <section className="py-space-xl bg-surface">
         <div className="max-w-4xl mx-auto px-margin text-center">
-          <div className="bg-inverse-surface rounded-xl p-space-xl relative overflow-hidden">
+          <div className="bg-inverse-surface rounded-xl p-5 sm:p-space-xl relative overflow-hidden">
             <div className="absolute -right-20 -bottom-20 w-72 h-72 rounded-full bg-primary-container/20 blur-3xl pointer-events-none" />
             <div className="relative z-10">
               <h2 className="text-headline-md font-display font-bold text-surface-bright mb-space-md">Have specific clinical questions?</h2>
               <p className="text-body-lg text-secondary-fixed mb-space-xl">Schedule an unhurried consultation with {doctor.shortName}.</p>
-              <Link href="/book" className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold hover:opacity-95 transition-all">
+              <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
                 Book Consultation <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
               </Link>
             </div>

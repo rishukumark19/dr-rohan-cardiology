@@ -29,7 +29,7 @@ export default function LocationsPage() {
     : "Emergency Only Today — Call 102";
 
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
 
       {/* ── HEADER ─────────────────────────────────────────── */}
       <section className="bg-surface py-space-xl">
@@ -49,7 +49,7 @@ export default function LocationsPage() {
           </p>
 
           {/* Dynamic weekly day roster */}
-          <div className="mt-space-lg overflow-x-auto no-scrollbar">
+          <div className="mt-space-lg overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-pl-4">
             <div className="flex gap-space-xs min-w-max pb-1">
               {WEEKLY_SCHEDULE.map((d) => {
                 const isToday = d.dayIndex === todayIndex;
@@ -57,7 +57,7 @@ export default function LocationsPage() {
                 return (
                   <div
                     key={d.day}
-                    className={`flex-shrink-0 w-28 p-3 rounded-DEFAULT flex flex-col items-center text-center gap-0.5 transition-all ${
+                    className={`shrink-0 snap-start w-28 p-3 rounded-DEFAULT flex flex-col items-center text-center gap-0.5 transition-all ${
                       isEmergency
                         ? "bg-error-container text-on-error-container"
                         : isToday
@@ -97,10 +97,10 @@ export default function LocationsPage() {
               return (
                 <article
                   key={clinic.id}
-                  className={`bg-surface-container-lowest rounded-xl shadow-card p-space-lg flex flex-col gap-space-md transition-all hover:shadow-card-hover ${clinicOpenToday ? "ring-2 ring-primary/30" : ""}`}
+                  className={`bg-surface-container-lowest rounded-xl shadow-card p-4 sm:p-space-lg flex flex-col gap-space-md transition-all hover:shadow-card-hover ${clinicOpenToday ? "ring-2 ring-primary/30" : ""}`}
                 >
                   {/* Badge row */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className={`text-label-sm font-display font-bold px-space-md py-1.5 rounded-full flex items-center gap-1 ${
                       clinic.type === "flagship" ? "bg-tertiary-fixed text-on-tertiary-fixed" :
                       clinic.type === "telehealth" ? "bg-primary-container/20 text-primary" :
@@ -111,7 +111,7 @@ export default function LocationsPage() {
                       </span>
                       {clinic.badge}
                     </span>
-                    <div className="flex items-center gap-space-xs">
+                    <div className="flex items-center gap-space-xs shrink-0">
                       {clinicOpenToday && (
                         <span className="text-label-sm font-display font-bold text-tertiary flex items-center gap-1">
                           <span className="w-2 h-2 rounded-full bg-tertiary animate-pulse" />Open Today
@@ -136,7 +136,7 @@ export default function LocationsPage() {
                   </div>
 
                   {/* Schedule & diagnostics */}
-                  <div className="grid grid-cols-2 gap-space-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-xs">
                     <div className="p-2.5 rounded-DEFAULT bg-surface-container-low flex flex-col gap-0.5">
                       <span className="text-label-sm text-secondary font-display font-semibold flex items-center gap-1">
                         <span className="material-symbols-outlined text-[14px]">schedule</span>
@@ -166,7 +166,7 @@ export default function LocationsPage() {
                   <div className="flex flex-col gap-space-xs pt-space-xs">
                     <Link
                       href="/book"
-                      className="w-full flex items-center justify-center gap-space-xs py-3 rounded-full bg-primary-container text-on-primary-container text-label-md font-display font-bold hover:opacity-90 hover:scale-[1.01] transition-all"
+                      className="w-full flex items-center justify-center gap-space-xs py-3 rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
                     >
                       {clinic.isVirtual ? "Book Video OPD" : `Book ${clinic.shortName} Slot`}
                       <span className="material-symbols-outlined text-[18px]">calendar_month</span>
@@ -176,9 +176,9 @@ export default function LocationsPage() {
                         href={clinic.mapsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-space-xs py-2.5 rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all"
+                        className="flex items-center justify-center gap-space-xs py-3 rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-colors min-h-[48px]"
                       >
-                        <span className="material-symbols-outlined text-[18px] text-primary">directions</span>
+                        <span className="material-symbols-outlined text-[18px]">directions</span>
                         Get Directions
                       </a>
                     )}
@@ -189,13 +189,13 @@ export default function LocationsPage() {
           </div>
 
           {/* Coordinator help */}
-          <div className="mt-space-xl bg-surface-container-lowest rounded-xl shadow-card p-space-lg flex flex-col sm:flex-row items-center gap-space-md">
-            <div className="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shrink-0">
+          <div className="mt-space-xl bg-surface-container-lowest rounded-xl shadow-card p-4 sm:p-space-lg flex flex-col sm:flex-row items-center gap-space-md">
+            <div className="w-14 h-14 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-[28px]">support_agent</span>
             </div>
             <div className="flex-1 text-center sm:text-left">
               <p className="text-title-md font-display font-bold text-on-surface">Unsure which location to choose?</p>
-              <p className="text-body-sm text-on-surface-variant">
+              <p className="text-body-sm text-on-surface-variant mt-0.5">
                 Chat with <strong className="text-on-surface">{doctor.coordinator.name}</strong>, {doctor.name}&apos;s Care Coordinator. She will recommend the best clinic for your condition and schedule.
               </p>
             </div>
@@ -204,7 +204,7 @@ export default function LocationsPage() {
                 href={buildWhatsAppUrl({ purpose: "inquiry" })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-space-lg py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90 transition-all"
+                className="w-full sm:w-auto flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-space-lg py-3 rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
               >
                 <span className="material-symbols-outlined text-[18px]">chat</span>
                 WhatsApp {doctor.coordinator.name}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
 
       {/* ── HERO ──── */}
       <section className="relative overflow-hidden bg-surface py-space-xl">
@@ -39,11 +39,11 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="flex flex-col w-full gap-space-xs max-w-xs">
-                <Link href="/book" className="flex items-center justify-center gap-space-xs py-space-sm rounded-full bg-primary text-on-primary text-label-md font-display font-bold hover:opacity-90 transition-all">
+                <Link href="/book" className="flex items-center justify-center gap-space-xs py-3 rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
                   <span className="material-symbols-outlined text-[18px]">calendar_month</span>
                   Book Consultation
                 </Link>
-                <a href={`tel:${doctor.phoneRaw}`} className="flex items-center justify-center gap-space-xs py-space-sm rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
+                <a href={`tel:${doctor.phoneRaw}`} className="flex items-center justify-center gap-space-xs py-3 rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-colors min-h-[48px]">
                   <span className="material-symbols-outlined text-[18px] text-primary">call</span>
                   {doctor.phone}
                 </a>
@@ -77,23 +77,23 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-margin">
           <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Academic Journey</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Education &amp; Qualifications</h2>
-          <div className="relative flex flex-col gap-space-md pl-space-xl">
+          <div className="relative flex flex-col gap-space-md pl-6 sm:pl-space-xl">
             {/* Timeline line */}
             <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
             {doctor.education.map((edu, i) => (
-              <div key={i} className="relative flex gap-space-lg items-start">
+              <div key={i} className="relative flex gap-space-md sm:gap-space-lg items-start">
                 {/* Dot */}
-                <div className="absolute -left-space-xl w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface-container-low flex items-center justify-center shrink-0 mt-1">
+                <div className="absolute -left-6 sm:-left-space-xl w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface-container-low flex items-center justify-center shrink-0 mt-1">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <div className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex-1">
-                  <div className="flex items-start justify-between gap-space-sm flex-wrap">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5 sm:gap-space-sm">
                     <div>
                       <span className="text-label-md font-display font-bold text-primary block">{edu.degree}</span>
                       <span className="text-body-md font-display font-semibold text-on-surface">{edu.institution}</span>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-label-md font-display font-bold text-on-surface bg-surface-container px-space-sm py-0.5 rounded-full">{edu.year}</span>
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-surface-container">
+                      <span className="text-label-md font-display font-bold text-primary bg-primary-container/20 px-space-sm py-0.5 rounded-full">{edu.year}</span>
                       <span className="text-label-sm text-on-surface-variant">{edu.type}</span>
                     </div>
                   </div>
@@ -109,21 +109,21 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-margin">
           <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Clinical Career</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Professional Experience</h2>
-          <div className="relative flex flex-col gap-space-md pl-space-xl">
-            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-tertiary to-tertiary-container opacity-30 rounded-full" />
+          <div className="relative flex flex-col gap-space-md pl-6 sm:pl-space-xl">
+            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
             {doctor.experience_timeline.map((exp, i) => (
-              <div key={i} className="relative flex gap-space-lg items-start">
-                <div className="absolute -left-space-xl w-[22px] h-[22px] rounded-full bg-tertiary-container border-4 border-surface flex items-center justify-center shrink-0 mt-1">
-                  <div className="w-2 h-2 rounded-full bg-tertiary" />
+              <div key={i} className="relative flex gap-space-md sm:gap-space-lg items-start">
+                <div className="absolute -left-6 sm:-left-space-xl w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface flex items-center justify-center shrink-0 mt-1">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <div className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex-1">
-                  <div className="flex items-start justify-between gap-space-sm flex-wrap">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5 sm:gap-space-sm">
                     <div>
-                      <span className="text-label-md font-display font-bold text-tertiary block">{exp.role}</span>
+                      <span className="text-label-md font-display font-bold text-primary block">{exp.role}</span>
                       <span className="text-body-md font-display font-semibold text-on-surface">{exp.institution}</span>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-label-md font-display font-bold text-on-surface bg-surface-container px-space-sm py-0.5 rounded-full">{exp.year}</span>
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between gap-1 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-surface-container">
+                      <span className="text-label-md font-display font-bold text-primary bg-primary-container/20 px-space-sm py-0.5 rounded-full">{exp.year}</span>
                       <span className="text-label-sm text-on-surface-variant">{exp.type}</span>
                     </div>
                   </div>
@@ -179,10 +179,10 @@ export default function AboutPage() {
       <section className="py-space-xl bg-surface-container-low">
         <div className="max-w-4xl mx-auto px-margin text-center">
           <span className="material-symbols-outlined text-[48px] text-primary-container material-symbols-filled">format_quote</span>
-          <blockquote className="text-headline-md font-display font-bold text-on-surface leading-snug mt-space-sm mb-space-xl">
+          <blockquote className="text-[19px] sm:text-headline-md font-display font-bold text-on-surface leading-snug mt-space-sm mb-space-xl">
             {doctor.philosophy}
           </blockquote>
-          <Link href="/book" className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 transition-all">
+          <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
             Book a Consultation <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
           </Link>
         </div>

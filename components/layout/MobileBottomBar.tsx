@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const navItems = [
   { href: "/about",     icon: "person",           iconFilled: "person",       label: "About" },
@@ -47,11 +47,7 @@ export default function MobileBottomBar() {
         {/* Book CTA — prominent pill */}
         <Link
           href="/book"
-          className={`flex flex-col items-center justify-center min-w-[64px] min-h-[48px] px-space-sm py-1 rounded-xl text-label-sm font-display font-bold transition-all active:scale-[0.97] ${
-            isBooking
-              ? "bg-primary text-on-primary shadow-glow-cyan-sm"
-              : "bg-primary-container text-on-primary-container shadow-glow-cyan-sm"
-          }`}
+          className="flex flex-col items-center justify-center min-w-[64px] min-h-[48px] px-space-sm py-1 rounded-xl text-label-sm font-display font-bold transition-all active:scale-[0.97] bg-primary text-on-primary shadow-glow-cyan-sm hover:opacity-95"
         >
           <span className="material-symbols-outlined text-[22px]">
             {isBooking ? "check_circle" : "calendar_month"}

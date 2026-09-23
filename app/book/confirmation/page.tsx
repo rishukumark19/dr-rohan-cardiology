@@ -59,7 +59,7 @@ export default function BookConfirmationPage() {
   const displayTime = booking?.time ?? "—";
 
   return (
-    <div className="min-h-screen bg-surface-container-low flex items-start justify-center py-space-xl px-margin pb-24 md:pb-space-xl">
+    <div className="min-h-screen bg-surface-container-low flex items-start justify-center py-space-xl px-margin pb-28 md:pb-space-xl">
       <div className="w-full max-w-sm flex flex-col gap-space-md">
 
         {/* Confirmed badge */}
@@ -74,13 +74,13 @@ export default function BookConfirmationPage() {
         {/* Token banner */}
         <div className="relative overflow-hidden bg-primary text-on-primary rounded-lg p-space-md shadow-glow-cyan">
           <div className="absolute -right-6 -bottom-10 w-36 h-36 rounded-full bg-primary-container opacity-40 blur-2xl pointer-events-none" />
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2">
             <div className="space-y-space-xs">
               <p className="text-label-md text-primary-fixed uppercase tracking-wider">Live OPD Queue Slot</p>
-              <p className="text-display-hero-mobile font-display font-extrabold text-on-primary tracking-tight">{displayToken.split("-").pop()}</p>
+              <p className="text-display-hero-mobile font-display font-extrabold text-on-primary tracking-tight leading-none">{displayToken.split("-").pop()}</p>
               <p className="text-body-sm text-surface-container-highest">{clinic.shortName} · {displayDay}</p>
             </div>
-            <div className="flex flex-col items-end gap-space-xs">
+            <div className="flex flex-col sm:items-end gap-space-xs">
               <span className="inline-flex items-center px-space-xs py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-display font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse mr-1.5" />Confirmed
               </span>
@@ -142,7 +142,7 @@ export default function BookConfirmationPage() {
             <div className="flex items-center justify-between bg-surface-container px-space-md py-space-sm rounded-DEFAULT">
               <div>
                 <span className="text-label-sm text-on-surface-variant block">Consultation Fee</span>
-                <span className="text-title-md font-display text-on-surface">₹{clinic.fee.toLocaleString()}</span>
+                <span className="text-title-md font-display font-extrabold text-primary">₹{clinic.fee.toLocaleString()}</span>
                 <span className="text-body-sm text-tertiary block">{clinic.isVirtual ? "Pay via UPI link sent on WhatsApp" : "Pay at clinic via UPI/Cash"}</span>
               </div>
               <div className="text-right">
@@ -201,12 +201,12 @@ export default function BookConfirmationPage() {
         <div className="flex flex-col gap-space-sm">
           <h2 className="text-headline-sm font-display font-bold text-on-surface">Visit Preparation</h2>
           {[
-            { icon: "schedule", title: "Arrive 15 mins early", desc: "Allows Sister Neha time for baseline vitals: BP, SpO2, and pulse check.", color: "bg-secondary-container text-on-secondary-container" },
-            { icon: "folder_open", title: "Carry Medical Records", desc: "Prior ECG strips, echo CDs, current medication blister strips.", color: "bg-primary-fixed text-on-primary-fixed" },
-            { icon: "checkroom", title: "Wear Loose Sleeves", desc: "Allows quick BP cuff wrapping and 12-lead ECG lead placement.", color: "bg-tertiary-fixed text-on-tertiary-fixed" },
+            { icon: "schedule", title: "Arrive 15 mins early", desc: "Allows Sister Neha time for baseline vitals: BP, SpO2, and pulse check." },
+            { icon: "folder_open", title: "Carry Medical Records", desc: "Prior ECG strips, echo CDs, current medication blister strips." },
+            { icon: "checkroom", title: "Wear Loose Sleeves", desc: "Allows quick BP cuff wrapping and 12-lead ECG lead placement." },
           ].map((item) => (
             <div key={item.title} className="bg-surface-container-low rounded-DEFAULT p-space-md flex items-start gap-space-sm">
-              <div className={`p-space-xs rounded-full shrink-0 mt-0.5 ${item.color}`}>
+              <div className="p-space-xs rounded-full shrink-0 mt-0.5 bg-primary-container/20 text-primary">
                 <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
               </div>
               <div>
@@ -217,7 +217,7 @@ export default function BookConfirmationPage() {
           ))}
         </div>
 
-        <Link href="/appointment" className="w-full flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
+        <Link href="/appointment" className="w-full flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
           Reschedule or Cancel <span className="material-symbols-outlined text-[18px]">settings</span>
         </Link>
       </div>

@@ -36,7 +36,7 @@ export default function EmergencyBanner() {
         </div>
         <a
           href={`tel:${doctor.emergency.number}`}
-          className="shrink-0 flex items-center gap-1 px-space-md py-1.5 rounded-full bg-error text-on-error text-label-sm font-display font-bold hover:opacity-90 transition-opacity"
+          className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-1 px-space-md py-2 sm:py-1.5 rounded-full bg-error text-on-error text-label-sm font-display font-bold hover:opacity-90 transition-opacity min-h-[44px] sm:min-h-0"
         >
           <span className="material-symbols-outlined text-[16px]">call</span>
           Call {doctor.emergency.number}

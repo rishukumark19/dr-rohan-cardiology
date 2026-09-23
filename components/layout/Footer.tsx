@@ -4,7 +4,7 @@ import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function Footer() {
   return (
-    <footer className="bg-inverse-surface text-secondary-fixed font-body pt-space-xl pb-space-lg">
+    <footer className="bg-inverse-surface text-secondary-fixed font-body pt-space-xl pb-28 md:pb-space-lg">
       <div className="max-w-7xl mx-auto px-margin">
         {/* Main grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl pb-space-xl">
@@ -12,7 +12,7 @@ export default function Footer() {
           {/* Col 1+2: Doctor bio */}
           <div className="lg:col-span-2 space-y-space-sm">
             <div className="flex items-center gap-space-sm">
-              <div className="w-9 h-9 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-glow-cyan-sm">
                 <span className="material-symbols-outlined text-[20px] material-symbols-filled">cardiology</span>
               </div>
               <span className="font-display text-[13px] font-bold text-surface-bright uppercase tracking-widest">
@@ -111,11 +111,11 @@ export default function Footer() {
         </div>
 
         {/* Copyright bar */}
-        <div className="pt-space-md border-t border-outline/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm text-label-sm text-outline-variant">
+        <div className="pt-space-md border-t border-outline/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm text-label-sm text-outline-variant text-center sm:text-left">
           <div>
             © {new Date().getFullYear()} {doctor.name} {doctor.speciality} Practice. All rights reserved.
           </div>
-          <div className="flex items-center gap-space-md">
+          <div className="flex flex-wrap items-center justify-center gap-x-space-md gap-y-1">
             <Link href="/privacy" className="hover:text-surface-bright transition-colors">
               Patient Privacy Policy
             </Link>

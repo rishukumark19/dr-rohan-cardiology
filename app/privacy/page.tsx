@@ -5,9 +5,9 @@ export const metadata: Metadata = { title: "Patient Privacy Policy" };
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-surface py-space-xl pb-24 md:pb-space-xl">
+    <div className="min-h-screen bg-surface py-space-xl pb-28 md:pb-space-xl">
       <div className="max-w-3xl mx-auto px-margin">
-        <h1 className="text-headline-md font-display font-bold text-on-surface mb-space-lg">Patient Privacy Policy</h1>
+        <h1 className="text-headline-lg-mobile md:text-headline-md font-display font-bold text-on-surface mb-space-lg">Patient Privacy Policy</h1>
         <div className="text-body-md text-secondary leading-relaxed flex flex-col gap-space-md">
           <p>This website is operated by the practice of {doctor.name}, {doctor.title} (NMC Reg. {doctor.nmc}), and is committed to protecting the privacy and confidentiality of all patient information.</p>
           <h2 className="text-title-md font-display font-bold text-on-surface">Information We Collect</h2>

@@ -202,9 +202,9 @@ export default function BookPage() {
           <span className="material-symbols-outlined text-[48px] text-outline">calendar_off</span>
           <div><h1 className="text-headline-sm font-display font-bold text-on-surface">No Slots Available</h1><p className="text-body-md text-on-surface-variant mt-space-xs">No slots available for your selected date and clinic. Try another date or reach us directly.</p></div>
           <div className="flex flex-col w-full gap-space-xs">
-            <button onClick={() => { setState("form"); setStep(3); }} className="py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-md font-display font-bold">Choose Another Date</button>
-            <a href={buildWhatsAppUrl({ purpose: "booking" })} target="_blank" rel="noopener noreferrer" className="py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-semibold flex items-center justify-center gap-1"><span className="material-symbols-outlined text-[18px]">chat</span>WhatsApp Clinic</a>
-            <a href={buildCallUrl()} className="py-[14px] rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold flex items-center justify-center gap-1"><span className="material-symbols-outlined text-[18px]">call</span>Call Clinic</a>
+            <button onClick={() => { setState("form"); setStep(3); }} className="py-[14px] rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all">Choose Another Date</button>
+            <a href={buildWhatsAppUrl({ purpose: "booking" })} target="_blank" rel="noopener noreferrer" className="py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-semibold flex items-center justify-center gap-1 hover:opacity-90 active:scale-[0.98] transition-all"><span className="material-symbols-outlined text-[18px]">chat</span>WhatsApp Clinic</a>
+            <a href={buildCallUrl()} className="py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold flex items-center justify-center gap-1 hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[18px]">call</span>Call Clinic</a>
           </div>
         </div>
       </div>
@@ -213,7 +213,7 @@ export default function BookPage() {
 
   // ── WIZARD FORM ──────────────────────────────────────
   return (
-    <div className="min-h-screen bg-surface-container-low pb-24 md:pb-0">
+    <div className="min-h-screen bg-surface-container-low pb-28 md:pb-0">
       <div className="max-w-2xl mx-auto px-margin py-space-xl">
 
         {/* Progress */}
@@ -222,16 +222,27 @@ export default function BookPage() {
             <h1 className="text-headline-sm font-display font-bold text-on-surface">Book a Consultation</h1>
             <span className="text-label-md font-display font-semibold text-on-surface-variant">Step {step + 1} of {STEPS.length}</span>
           </div>
-          <div className="flex gap-space-xs items-center">
+
+          {/* Desktop full circle stepper */}
+          <div className="hidden sm:flex gap-space-xs items-center">
             {STEPS.map((label, i) => (
               <div key={label} className="flex items-center gap-space-xs flex-1 last:flex-none">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-label-sm font-display font-bold shrink-0 transition-all ${i < step ? "bg-tertiary text-on-tertiary" : i === step ? "bg-primary text-on-primary" : "bg-surface-container text-outline"}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-label-sm font-display font-bold shrink-0 transition-all ${i < step ? "bg-tertiary text-on-tertiary" : i === step ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-outline"}`}>
                   {i < step ? <span className="material-symbols-outlined text-[16px]">check</span> : i + 1}
                 </div>
                 {i < STEPS.length - 1 && <div className={`h-0.5 flex-1 rounded-full transition-all ${i < step ? "bg-tertiary" : "bg-outline-variant"}`} />}
               </div>
             ))}
           </div>
+
+          {/* Mobile compact progress bar */}
+          <div className="sm:hidden w-full bg-surface-container rounded-full h-2 overflow-hidden my-2">
+            <div
+              className="bg-primary h-full rounded-full transition-all duration-300"
+              style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+            />
+          </div>
+
           <div className="mt-space-xs text-body-sm text-on-surface-variant font-display font-semibold">{STEPS[step]}</div>
         </div>
 
@@ -334,7 +345,7 @@ export default function BookPage() {
           {step === 3 && (
             <div className="flex flex-col gap-space-md">
               <h2 className="text-headline-sm font-display font-bold text-on-surface">Choose your preferred date</h2>
-              <div className="grid grid-cols-3 gap-space-xs">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-space-xs">
                 {DAYS.map((d) => {
                   const isClinicOpen = selectedClinic.daysArray.includes(d.dayIndex);
                   const isSelected = booking.day === d.label;
@@ -344,7 +355,7 @@ export default function BookPage() {
                       onClick={() => isClinicOpen && set("day", d.label)}
                       disabled={!isClinicOpen}
                       title={!isClinicOpen ? `${selectedClinic.shortName} is not open on ${d.date}` : undefined}
-                      className={`py-space-md px-space-xs rounded-lg text-center transition-all flex flex-col items-center gap-0.5 relative ${
+                      className={`py-space-md px-1 sm:px-space-xs rounded-lg text-center transition-all flex flex-col items-center justify-center gap-0.5 relative min-h-[64px] ${
                         !isClinicOpen
                           ? "bg-surface-container/40 text-outline cursor-not-allowed opacity-50"
                           : isSelected
@@ -352,8 +363,8 @@ export default function BookPage() {
                           : "bg-surface-container text-on-surface hover:bg-surface-container-high"
                       }`}
                     >
-                      <span className="text-label-lg font-display font-bold">{d.label}</span>
-                      <span className={`text-label-sm ${
+                      <span className="text-label-md sm:text-label-lg font-display font-bold leading-tight">{d.label}</span>
+                      <span className={`text-[10px] sm:text-label-sm leading-tight ${
                         !isClinicOpen ? "text-outline" : isSelected ? "text-primary-fixed" : "text-on-surface-variant"
                       }`}>{d.date}</span>
                       {!isClinicOpen && (
@@ -380,7 +391,7 @@ export default function BookPage() {
                   <button
                     key={t}
                     onClick={() => set("time", t)}
-                    className={`py-space-sm rounded-full text-label-md font-display font-semibold text-center transition-all ${booking.time === t ? "bg-primary-container text-on-primary-container shadow-glow-cyan-sm" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}
+                    className={`py-space-sm rounded-full text-label-md font-display font-semibold text-center transition-all ${booking.time === t ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}
                   >
                     {t}
                   </button>
@@ -413,7 +424,7 @@ export default function BookPage() {
                 </div>
                 {/* Age & Gender (new patients only) */}
                 {booking.patientType === "new" && (
-                  <div className="grid grid-cols-2 gap-space-md">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
                     <div>
                       <label htmlFor="age" className="text-label-sm font-display font-bold text-on-surface block mb-1">Age <span className="text-error">*</span></label>
                       <input id="age" type="number" min="1" max="120" value={booking.age} onChange={(e) => set("age", e.target.value)} placeholder="e.g. 52" className={`w-full px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.age ? "ring-2 ring-error" : ""}`} />
@@ -423,7 +434,7 @@ export default function BookPage() {
                       <label className="text-label-sm font-display font-bold text-on-surface block mb-1">Gender</label>
                       <div className="flex gap-space-xs">
                         {["Male", "Female", "Other"].map((g) => (
-                          <button key={g} type="button" onClick={() => set("gender", g)} className={`flex-1 py-3 rounded-DEFAULT text-label-sm font-display font-semibold transition-all ${booking.gender === g ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}>{g}</button>
+                          <button key={g} type="button" onClick={() => set("gender", g)} className={`flex-1 py-3 rounded-DEFAULT text-label-sm font-display font-semibold transition-all min-h-[44px] ${booking.gender === g ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}>{g}</button>
                         ))}
                       </div>
                     </div>
@@ -474,7 +485,7 @@ export default function BookPage() {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-space-sm py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-space-sm py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <><span className="animate-spin material-symbols-outlined text-[20px]">progress_activity</span>Confirming...</>
@@ -493,15 +504,15 @@ export default function BookPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-space-md">
+        <div className="flex items-center justify-between mt-space-md gap-space-sm">
           {step > 0 ? (
-            <button onClick={back} className="flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
+            <button onClick={back} className="flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all min-h-[48px]">
               <span className="material-symbols-outlined text-[18px]">arrow_back</span> Back
             </button>
           ) : <div />}
 
           {step < 6 && step > 1 && (
-            <button onClick={next} className="flex items-center gap-space-xs px-space-xl py-space-sm rounded-full bg-primary text-on-primary text-label-md font-display font-bold hover:opacity-90 transition-all">
+            <button onClick={next} className="flex-1 sm:flex-none flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
               Continue <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
           )}

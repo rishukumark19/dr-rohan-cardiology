@@ -40,27 +40,27 @@ function FAQContent() {
           value={query}
           onChange={(e) => { setQuery(e.target.value); setOpenIndex(null); }}
           placeholder="Search questions about booking, fees, locations…"
-          className="w-full pl-12 pr-space-md py-3.5 rounded-full bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          className="w-full pl-12 pr-space-md py-3.5 rounded-full bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all min-h-[48px]"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="absolute right-space-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface">
+          <button onClick={() => setQuery("")} className="absolute right-space-md top-1/2 -translate-y-1/2 text-outline hover:text-on-surface p-1">
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         )}
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-space-xs mb-space-lg">
+      <div className="flex flex-wrap items-center gap-space-xs mb-space-lg">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => { setActiveCategory(cat); setOpenIndex(null); }}
-            className={`px-space-md py-1.5 rounded-full text-label-sm font-display font-bold transition-all ${activeCategory === cat ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}
+            className={`px-space-md py-2 rounded-full text-label-sm font-display font-bold transition-all min-h-[40px] ${activeCategory === cat ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}
           >
             {cat}
           </button>
         ))}
-        <span className="ml-auto text-label-sm text-on-surface-variant self-center">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
+        <span className="w-full sm:w-auto sm:ml-auto text-label-sm text-on-surface-variant pt-1 sm:pt-0">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</span>
       </div>
 
       {/* FAQ accordion */}
@@ -73,7 +73,7 @@ function FAQContent() {
               href={buildWhatsAppUrl({ purpose: "inquiry" })}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[44px]"
             >
               <span className="material-symbols-outlined text-[18px]">chat</span>
               Ask {doctor.coordinator.name} on WhatsApp
@@ -86,24 +86,19 @@ function FAQContent() {
             <div key={i} className={`bg-surface-container-lowest rounded-lg shadow-card overflow-hidden transition-all ${isOpen ? "shadow-card-hover" : ""}`}>
               <button
                 onClick={() => setOpenIndex(isOpen ? null : i)}
-                className="w-full flex items-center justify-between gap-space-md px-space-lg py-space-md text-left group"
+                className="w-full flex items-start sm:items-center justify-between gap-space-sm sm:gap-space-md p-4 sm:px-space-lg sm:py-space-md text-left group min-h-[48px]"
                 aria-expanded={isOpen}
               >
-                <div className="flex items-start gap-space-md">
-                  <span className={`text-label-sm font-display font-bold px-space-xs py-0.5 rounded-full shrink-0 mt-0.5 ${
-                    faq.category === "Booking" ? "bg-primary-fixed text-on-primary-fixed" :
-                    faq.category === "Payments" ? "bg-secondary-container text-on-secondary-container" :
-                    faq.category === "Locations" ? "bg-tertiary-fixed text-on-tertiary-fixed" :
-                    "bg-surface-container text-on-surface-variant"
-                  }`}>{faq.category}</span>
-                  <span className="text-label-lg font-display font-semibold text-on-surface group-hover:text-primary transition-colors">{faq.q}</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-space-md flex-1">
+                  <span className="text-[11px] sm:text-label-sm font-display font-bold px-2 py-0.5 rounded-full shrink-0 w-fit bg-primary-container/20 text-primary uppercase tracking-wider">{faq.category}</span>
+                  <span className="text-label-md sm:text-label-lg font-display font-semibold text-on-surface group-hover:text-primary transition-colors leading-snug">{faq.q}</span>
                 </div>
-                <span className={`material-symbols-outlined text-[20px] text-outline shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
+                <span className={`material-symbols-outlined text-[20px] text-outline shrink-0 transition-transform duration-200 mt-1 sm:mt-0 ${isOpen ? "rotate-180" : ""}`}>
                   expand_more
                 </span>
               </button>
               {isOpen && (
-                <div className="px-space-lg pb-space-md border-t border-surface-container">
+                <div className="px-4 sm:px-space-lg pb-4 sm:pb-space-md border-t border-surface-container">
                   <p className="text-body-md text-secondary leading-relaxed pt-space-md">{faq.a}</p>
                 </div>
               )}
@@ -128,7 +123,7 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -167,7 +162,7 @@ export default function FAQPage() {
             href={buildWhatsAppUrl({ purpose: "inquiry" })}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
           >
             <span className="material-symbols-outlined text-[20px]">chat</span>
             WhatsApp {doctor.coordinator.name}

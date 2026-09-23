@@ -5,9 +5,9 @@ export const metadata: Metadata = { title: "Medical Disclaimer" };
 
 export default function DisclaimerPage() {
   return (
-    <div className="min-h-screen bg-surface py-space-xl pb-24 md:pb-space-xl">
+    <div className="min-h-screen bg-surface py-space-xl pb-28 md:pb-space-xl">
       <div className="max-w-3xl mx-auto px-margin">
-        <h1 className="text-headline-md font-display font-bold text-on-surface mb-space-lg">Medical Disclaimer</h1>
+        <h1 className="text-headline-lg-mobile md:text-headline-md font-display font-bold text-on-surface mb-space-lg">Medical Disclaimer</h1>
         <div className="bg-error-container/40 rounded-lg p-space-md mb-space-lg flex items-start gap-space-sm">
           <span className="material-symbols-outlined text-error text-[24px] shrink-0 mt-0.5 material-symbols-filled">warning</span>
           <p className="text-body-sm text-on-error-container font-display font-semibold">

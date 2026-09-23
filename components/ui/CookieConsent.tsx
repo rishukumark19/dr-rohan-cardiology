@@ -47,16 +47,16 @@ export default function CookieConsent() {
             Disclaimer
           </Link>
         </p>
-        <div className="flex items-center gap-space-xs flex-shrink-0">
+        <div className="flex items-center gap-space-xs flex-shrink-0 w-full sm:w-auto">
           <button
             onClick={decline}
-            className="px-space-md py-2 rounded-full text-label-md font-display font-semibold text-secondary-fixed bg-surface-container/10 hover:bg-surface-container/20 transition-colors"
+            className="flex-1 sm:flex-none flex items-center justify-center px-space-md py-2.5 rounded-full text-label-md font-display font-semibold text-secondary-fixed bg-surface-container/10 hover:bg-surface-container/20 transition-colors min-h-[44px]"
           >
             Decline
           </button>
           <button
             onClick={accept}
-            className="px-space-lg py-2 rounded-full text-label-md font-display font-bold bg-primary-container text-on-primary-container hover:opacity-90 transition-opacity"
+            className="flex-1 sm:flex-none flex items-center justify-center px-space-lg py-2.5 rounded-full text-label-md font-display font-bold bg-primary text-on-primary shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[44px]"
           >
             Accept & Continue
           </button>

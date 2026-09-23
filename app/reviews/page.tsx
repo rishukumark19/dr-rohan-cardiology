@@ -38,7 +38,7 @@ export default function ReviewsPage() {
   };
 
   return (
-    <div className="flex flex-col w-full pb-24 md:pb-0">
+    <div className="flex flex-col w-full pb-28 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewSchema) }}
@@ -69,11 +69,11 @@ export default function ReviewsPage() {
           {/* Review cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
             {REVIEWS.map((r) => (
-              <article key={r.name} className="bg-white/10 backdrop-blur-sm rounded-xl p-space-lg flex flex-col justify-between hover:bg-white/15 transition-all duration-300">
+              <article key={r.name} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-space-lg flex flex-col justify-between hover:bg-white/15 transition-all duration-300">
                 <div>
-                  <div className="flex items-center justify-between mb-space-md">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-space-md">
                     <div className="flex items-center gap-space-sm">
-                      <div className="w-11 h-11 rounded-full bg-primary-container/30 flex items-center justify-center text-primary-fixed font-display font-extrabold text-label-lg">
+                      <div className="w-11 h-11 rounded-full bg-primary-container/30 flex items-center justify-center text-primary-fixed font-display font-extrabold text-label-lg shrink-0">
                         {r.initials}
                       </div>
                       <div>
@@ -107,18 +107,18 @@ export default function ReviewsPage() {
             <h2 className="text-headline-md font-display font-bold text-on-surface">Why Patients Choose {doctor.shortName}</h2>
             <p className="text-body-lg text-secondary mt-space-xs max-w-xl mx-auto">Credentials and outcomes that speak for themselves — no unsupported claims.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-space-md">
             {[
-              { icon: "calendar_month", stat: doctor.experience,    label: "Years Clinical Experience",   color: "bg-primary-container/15 text-primary" },
-              { icon: "people",         stat: doctor.consultations,  label: "Patients Consulted",          color: "bg-tertiary-container/20 text-tertiary" },
-              { icon: "medical_services",stat: doctor.procedures,   label: "Procedures Performed",        color: "bg-secondary-container text-on-secondary-container" },
-              { icon: "star",           stat: doctor.satisfaction,   label: "Patient Satisfaction Rate",  color: "bg-primary-fixed text-on-primary-fixed" },
+              { icon: "calendar_month", stat: doctor.experience,    label: "Years Clinical Experience" },
+              { icon: "people",         stat: doctor.consultations,  label: "Patients Consulted" },
+              { icon: "medical_services",stat: doctor.procedures,   label: "Procedures Performed" },
+              { icon: "star",           stat: doctor.satisfaction,   label: "Patient Satisfaction Rate" },
             ].map((m) => (
-              <div key={m.label} className="bg-surface-container-lowest rounded-xl p-space-lg text-center shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-space-sm ${m.color}`}>
+              <div key={m.label} className="bg-surface-container-lowest rounded-xl p-3.5 sm:p-space-lg text-center shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-space-sm bg-primary-container/20 text-primary">
                   <span className="material-symbols-outlined text-[24px]">{m.icon}</span>
                 </div>
-                <div className="text-headline-md font-display font-extrabold text-on-surface">{m.stat}</div>
+                <div className="text-[22px] sm:text-headline-md font-display font-extrabold text-primary leading-tight">{m.stat}</div>
                 <div className="text-body-sm text-on-surface-variant mt-1">{m.label}</div>
               </div>
             ))}
@@ -143,7 +143,7 @@ export default function ReviewsPage() {
       <section className="py-space-xl bg-surface">
         <div className="max-w-4xl mx-auto px-margin text-center">
           <h2 className="text-headline-md font-display font-bold text-on-surface mb-space-md">Ready to experience this care?</h2>
-          <Link href="/book" className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 transition-all">
+          <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
             Book Your Consultation
             <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
           </Link>

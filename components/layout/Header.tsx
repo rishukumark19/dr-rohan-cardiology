@@ -102,7 +102,7 @@ export default function Header() {
           {/* Drawer — slides in from the right */}
           <div
             id="mobile-drawer"
-            className="absolute right-0 top-0 bottom-0 w-[80vw] max-w-xs bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe"
+            className="absolute right-0 top-0 bottom-0 w-[85vw] max-w-xs bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe"
             style={{ animation: "slideInRight 0.25s ease-out" }}
           >
             {/* Drawer header */}
@@ -115,7 +115,7 @@ export default function Header() {
               </div>
               <button
                 onClick={() => setMenuOpen(false)}
-                className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface"
+                className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface"
                 aria-label="Close menu"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
@@ -131,7 +131,7 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-space-md px-space-md py-space-sm rounded-DEFAULT text-body-md font-display font-semibold transition-colors ${
+                    className={`flex items-center gap-space-md px-space-md py-3 rounded-DEFAULT text-body-md font-display font-semibold transition-colors min-h-[48px] ${
                       isActive
                         ? "bg-primary-container text-on-primary-container"
                         : "text-on-surface hover:bg-surface-container"
@@ -145,18 +145,26 @@ export default function Header() {
 
             {/* Bottom actions */}
             <div className="px-space-md py-space-md flex flex-col gap-space-sm border-t border-outline-variant">
+              <Link
+                href="/book"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-space-sm py-3 rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
+              >
+                <span>Book Appointment</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </Link>
               <a
                 href={buildWhatsAppUrl({ purpose: "inquiry" })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-space-sm py-space-sm rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold"
+                className="flex items-center justify-center gap-space-sm py-3 rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
               >
                 <span className="material-symbols-outlined text-[20px]">chat</span>
                 WhatsApp Desk
               </a>
               <a
                 href={buildCallUrl()}
-                className="flex items-center justify-center gap-space-sm py-space-sm rounded-full bg-surface-container text-primary text-label-lg font-display font-semibold"
+                className="flex items-center justify-center gap-space-sm py-3 rounded-full bg-surface-container text-primary text-label-lg font-display font-semibold hover:bg-surface-container-high transition-colors min-h-[48px]"
               >
                 <span className="material-symbols-outlined text-[20px]">call</span>
                 {doctor.phone}

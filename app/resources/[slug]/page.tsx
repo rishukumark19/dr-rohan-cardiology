@@ -92,25 +92,25 @@ export default async function ArticlePage({
   };
 
   return (
-    <div className="min-h-screen bg-surface pb-24 md:pb-0">
+    <div className="min-h-screen bg-surface pb-28 md:pb-0">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 
       {/* Breadcrumb */}
       <div className="bg-surface-container-low border-b border-outline-variant">
         <div className="max-w-3xl mx-auto px-margin py-space-sm">
-          <nav className="flex items-center gap-space-xs text-label-sm text-on-surface-variant font-display">
+          <nav className="flex items-center gap-space-xs text-label-sm text-on-surface-variant font-display flex-wrap">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
             <Link href="/resources" className="hover:text-primary transition-colors">Resources</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-on-surface font-semibold truncate max-w-[200px]">{article.category}</span>
+            <span className="text-on-surface font-semibold truncate max-w-[140px] sm:max-w-[200px]">{article.category}</span>
           </nav>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-margin py-space-xl">
         {/* Category + meta */}
-        <div className="flex items-center gap-space-xs mb-space-md">
+        <div className="flex flex-wrap items-center gap-x-space-xs gap-y-1.5 mb-space-md">
           <span className="text-label-sm font-display font-bold px-space-md py-1 rounded-full bg-primary-fixed text-on-primary-fixed">{article.category}</span>
           <span className="text-label-sm text-outline font-display">·</span>
           <span className="text-label-sm text-outline font-display">{article.readTime}</span>
@@ -125,12 +125,12 @@ export default async function ArticlePage({
 
         {/* Author */}
         <div className="flex items-center gap-space-md mb-space-xl pb-space-md border-b border-outline-variant">
-          <div className="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0">
             <span className="material-symbols-outlined text-[24px] text-primary">person</span>
           </div>
           <div>
             <div className="text-label-md font-display font-bold text-on-surface">Reviewed by {doctor.name}</div>
-            <div className="text-body-sm text-on-surface-variant">{doctor.title} · {doctor.qualifications.split("•")[0].trim()}</div>
+            <div className="text-body-sm text-on-surface-variant leading-snug">{doctor.title} · {doctor.qualifications.split("•")[0].trim()}</div>
           </div>
         </div>
 
@@ -171,12 +171,12 @@ export default async function ArticlePage({
         </div>
 
         {/* Book CTA */}
-        <div className="bg-inverse-surface rounded-xl p-space-xl text-center relative overflow-hidden">
-          <div className="absolute -right-16 -bottom-16 w-48 h-48 rounded-full bg-primary-container/20 blur-3xl" />
+        <div className="bg-inverse-surface rounded-xl p-5 sm:p-space-xl text-center relative overflow-hidden">
+          <div className="absolute -right-16 -bottom-16 w-48 h-48 rounded-full bg-primary-container/20 blur-3xl pointer-events-none" />
           <div className="relative z-10">
             <h2 className="text-headline-sm font-display font-bold text-surface-bright mb-space-sm">Have questions about your heart health?</h2>
             <p className="text-body-md text-secondary-fixed mb-space-lg">Schedule an in-depth consultation with {doctor.shortName}.</p>
-            <Link href="/book" className="inline-flex items-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold hover:opacity-90 transition-all">
+            <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
               Book Consultation <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
             </Link>
           </div>

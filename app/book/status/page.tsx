@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function BookStatusPage() {
   return (
-    <div className="min-h-screen bg-surface-container-low py-space-xl px-margin pb-24 md:pb-space-xl">
+    <div className="min-h-screen bg-surface-container-low py-space-xl px-margin pb-28 md:pb-space-xl">
       <div className="max-w-md mx-auto flex flex-col gap-space-md">
         {/* Status states */}
         <div className="bg-primary text-on-primary rounded-lg p-space-lg shadow-glow-cyan relative overflow-hidden">
@@ -51,11 +51,11 @@ export default function BookStatusPage() {
 
         {/* Actions */}
         <div className="flex flex-col gap-space-xs">
-          <Link href="/book/confirmation" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold hover:opacity-90 transition-all">
+          <Link href="/book/confirmation" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
             View Digital OPD Pass
             <span className="material-symbols-outlined text-[20px]">qr_code_2</span>
           </Link>
-          <Link href="/appointment" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
+          <Link href="/appointment" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-all min-h-[48px]">
             Reschedule or Cancel
             <span className="material-symbols-outlined text-[18px]">settings</span>
           </Link>

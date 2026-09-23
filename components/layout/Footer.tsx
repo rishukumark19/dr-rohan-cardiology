@@ -20,7 +20,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-secondary-fixed-dim text-body-sm leading-relaxed max-w-sm">
-              {doctor.title} • {doctor.qualifications}. Specializing in trans-radial coronary interventions and cardiovascular care across South Delhi & NCR.
+              {doctor.title} • {doctor.qualifications}. Specializing in trans-radial coronary interventions and cardiovascular care across {doctor.locationDesc}.
             </p>
             <div className="text-label-sm text-outline-variant">
               Delhi Medical Council (NMC) Reg:{" "}
@@ -78,16 +78,7 @@ export default function Footer() {
               Specialities
             </h4>
             <ul className="space-y-space-sm text-body-sm text-secondary-fixed-dim">
-              {[
-                "Trans-Radial Angioplasty",
-                "Drug-Eluting Stents",
-                "Permanent Pacemaker (AICD)",
-                "Preventive Calcium Score",
-                "Heart Failure Clinic",
-                "2D Echocardiogram",
-                "Resistant Hypertension",
-                "Video Telehealth OPD",
-              ].map((s) => (
+              {doctor.footerSpecialities.map((s) => (
                 <li key={s}>{s}</li>
               ))}
             </ul>

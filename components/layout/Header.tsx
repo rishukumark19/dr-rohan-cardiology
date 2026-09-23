@@ -6,7 +6,6 @@ import { doctor } from "@/config/doctor";
 import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const navLinks = [
-  { href: "/", label: "Home", path: "/" },
   { href: "/about", label: "About", path: "/about" },
   { href: "/locations", label: "Locations", path: "/locations" },
   { href: "/book", label: "Consultation", path: "/book" },
@@ -83,6 +82,8 @@ export default function Header() {
               className="lg:hidden w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-drawer"
             >
               <span className="material-symbols-outlined text-[22px]">menu</span>
             </button>
@@ -98,8 +99,12 @@ export default function Header() {
             className="absolute inset-0 bg-inverse-surface/60 backdrop-blur-sm"
             onClick={() => setMenuOpen(false)}
           />
-          {/* Drawer */}
-          <div className="absolute right-0 top-0 bottom-0 w-[80vw] max-w-xs bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe animate-slide-up">
+          {/* Drawer — slides in from the right */}
+          <div
+            id="mobile-drawer"
+            className="absolute right-0 top-0 bottom-0 w-[80vw] max-w-xs bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe"
+            style={{ animation: "slideInRight 0.25s ease-out" }}
+          >
             {/* Drawer header */}
             <div className="flex items-center justify-between px-space-md py-space-md border-b border-outline-variant">
               <div className="flex items-center gap-space-sm">

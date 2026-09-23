@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { doctor } from "@/config/doctor";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getInitials } from "@/lib/utils";
+import NextOpdBadge from "@/components/ui/NextOpdBadge";
+import { FadeUp, StaggerGrid, StaggerItem } from "@/components/ui/Animations";
 
 
 export const metadata: Metadata = {
@@ -27,17 +31,8 @@ export default function HomePage() {
 
             {/* Left: Content */}
             <div className="flex flex-col items-start order-2 lg:order-1">
-              {/* OPD live badge */}
-              <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container shadow-card mb-space-lg">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-tertiary" />
-                </span>
-                <span className="text-label-sm font-display font-semibold text-on-surface">
-                  OPD Today — GK-1 Clinic &nbsp;•&nbsp;
-                  <strong className="text-tertiary">Book Early</strong>
-                </span>
-              </div>
+              {/* Dynamic OPD badge */}
+              <NextOpdBadge />
 
 
               {/* Hero heading */}
@@ -52,7 +47,7 @@ export default function HomePage() {
 
               <p className="text-body-lg text-secondary max-w-xl leading-relaxed mb-space-lg">
                 {doctor.qualifications}. Practising across{" "}
-                <strong className="text-on-surface">South Delhi & NCR</strong> with{" "}
+                <strong className="text-on-surface">{doctor.locationDesc}</strong> with{" "}
                 <strong className="text-on-surface">{doctor.experience} years</strong> of clinical
                 experience in interventional cardiac care. Unhurried 20-minute consultations.
               </p>
@@ -103,12 +98,13 @@ export default function HomePage() {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary via-primary-container to-tertiary-fixed opacity-30 blur-2xl" />
                 <div className="absolute inset-4 rounded-full bg-gradient-to-b from-primary-container to-primary shadow-inner opacity-90" />
                 {/* Doctor photo */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={doctor.photo}
                   alt={`${doctor.name}, ${doctor.title}`}
-                  className="relative z-10 w-full h-full object-cover object-top rounded-full shadow-2xl"
-                  style={{ padding: "4px" }}
+                  width={384}
+                  height={384}
+                  priority
+                  className="relative z-10 w-full h-full object-cover object-top rounded-full shadow-2xl p-1"
                 />
                 {/* Verified badge */}
                 <div className="absolute -bottom-2 right-4 z-20 flex items-center gap-1 bg-surface-container-lowest text-primary py-2 px-3 rounded-full shadow-card">
@@ -137,34 +133,31 @@ export default function HomePage() {
       {/* ── KEY METRICS ────────────────────────────────────────── */}
       <section className="bg-surface-container-low py-space-xl" aria-label="Key clinical metrics">
         <div className="max-w-7xl mx-auto px-margin">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-space-md">
-            {[
-              { value: doctor.experience, label: "Years Practice", sub: "AIIMS & Senior Fellowships", icon: "award_star", color: "text-primary" },
-              { value: doctor.consultations, label: "Consultations", sub: "Clinical OPD Patients", icon: "ecg_heart", color: "text-tertiary" },
-              { value: doctor.procedures, label: "Radial Interventions", sub: "Wrist-entry Angioplasties", icon: "blood_pressure", color: "text-primary" },
-              { value: doctor.satisfaction, label: "Satisfaction", sub: `Over ${doctor.reviewCount} Reviews`, icon: "thumb_up", color: "text-tertiary" },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-surface-container-lowest p-space-md rounded-lg shadow-card flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <span className={`text-display-hero-mobile font-display font-extrabold ${stat.color} leading-none`}>
-                    {stat.value}
-                  </span>
-                  <span className={`material-symbols-outlined text-[22px] ${stat.color} opacity-50`}>{stat.icon}</span>
+          <StaggerGrid className="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+            {doctor.stats.map((stat) => (
+              <StaggerItem key={stat.label}>
+                <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-card flex flex-col justify-between h-full">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-display-hero-mobile font-display font-extrabold ${stat.color} leading-none`}>
+                      {doctor[stat.key]}
+                    </span>
+                    <span className={`material-symbols-outlined text-[22px] ${stat.color} opacity-50`}>{stat.icon}</span>
+                  </div>
+                  <div className="mt-space-sm">
+                    <div className="text-label-md font-display font-bold text-on-surface">{stat.label}</div>
+                    <div className="text-body-sm text-on-surface-variant">{stat.sub}</div>
+                  </div>
                 </div>
-                <div className="mt-space-sm">
-                  <div className="text-label-md font-display font-bold text-on-surface">{stat.label}</div>
-                  <div className="text-body-sm text-on-surface-variant">{stat.sub}</div>
-                </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerGrid>
         </div>
       </section>
 
       {/* ── BOOKING MODES ──────────────────────────────────────── */}
       <section className="py-space-xl bg-surface" aria-label="Consultation types">
         <div className="max-w-7xl mx-auto px-margin">
-          <div className="text-center mb-space-xl">
+          <FadeUp className="text-center mb-space-xl">
             <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-space-sm">
               <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
               Multiple Ways to Consult
@@ -175,7 +168,7 @@ export default function HomePage() {
             <p className="text-body-lg text-secondary max-w-2xl mx-auto mt-space-sm">
               Book however works best for you — instant slot, confirmation-based OPD, WhatsApp triage, or direct call.
             </p>
-          </div>
+          </FadeUp>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
             {[
@@ -248,17 +241,17 @@ export default function HomePage() {
       {/* ── SPECIALITIES ───────────────────────────────────────── */}
       <section className="py-space-xl bg-surface-container-low" aria-label="Clinical specialities">
         <div className="max-w-7xl mx-auto px-margin">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-lg">
+          <FadeUp className="flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-lg">
             <div>
               <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Clinical Focus Areas</div>
               <h2 className="text-headline-lg-mobile md:text-headline-md font-display font-bold text-on-surface tracking-tight">
-                Specialities & Expertise
+                Specialities &amp; Expertise
               </h2>
             </div>
             <Link href="/about" className="text-primary text-label-md font-display font-semibold flex items-center gap-1 hover:underline">
               Full profile <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
-          </div>
+          </FadeUp>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
             {doctor.specialities.map((s) => (
               <details key={s.id} className="group bg-surface-container-lowest rounded-lg p-space-md shadow-card transition-all">
@@ -288,7 +281,7 @@ export default function HomePage() {
       {/* ── CLINICS PREVIEW ────────────────────────────────────── */}
       <section className="py-space-xl bg-surface" aria-label="Consulting locations">
         <div className="max-w-7xl mx-auto px-margin">
-          <div className="flex items-end justify-between mb-space-lg">
+          <FadeUp className="flex items-end justify-between mb-space-lg">
             <div>
               <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Where He Consults</div>
               <h2 className="text-headline-lg-mobile md:text-headline-md font-display font-bold text-on-surface tracking-tight">
@@ -298,7 +291,7 @@ export default function HomePage() {
             <Link href="/locations" className="text-primary text-label-md font-display font-semibold flex items-center gap-1 hover:underline">
               View all <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
-          </div>
+          </FadeUp>
           {/* Horizontal scroll on mobile, grid on desktop */}
           <div className="flex gap-space-md overflow-x-auto pb-space-sm no-scrollbar md:grid md:grid-cols-2 lg:grid-cols-4">
             {doctor.clinics.map((clinic) => (
@@ -361,34 +354,12 @@ export default function HomePage() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
-            {[
-              {
-                initials: "VG",
-                name: "Vikram Grover",
-                detail: "Radial Angioplasty • Max Saket",
-                quote: '"Dr. Rohan did my stenting through the wrist. I was walking just 3 hours later and discharged the next morning. His warmth took away 90% of our family\'s anxiety."',
-                color: "bg-primary-container/20 text-primary",
-              },
-              {
-                initials: "AS",
-                name: "Ananya Sengupta",
-                detail: "Preventive Calcium Scoring • GK-1",
-                quote: '"Never felt rushed. Dr. Sharma sat with us for 25 minutes explaining every metric in Hindi and English. He actually removed two redundant medications prescribed elsewhere."',
-                color: "bg-tertiary-container/20 text-tertiary-fixed",
-              },
-              {
-                initials: "RK",
-                name: "Rajesh Khanna",
-                detail: "Post-stent Follow-up • Video OPD",
-                quote: '"Booked via WhatsApp, got confirmation in 8 minutes. The video call was crystal clear. Digital prescription arrived on WhatsApp within 10 minutes of the call ending."',
-                color: "bg-secondary-container/20 text-secondary-fixed-dim",
-              },
-            ].map((r) => (
+            {doctor.testimonials.map((r) => (
               <div key={r.name} className="bg-surface-container-lowest/10 backdrop-blur-sm rounded-lg p-space-lg">
                 <div className="flex items-center justify-between mb-space-md">
                   <div className="flex items-center gap-space-sm">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-display font-bold text-label-lg ${r.color}`}>
-                      {r.initials}
+                      {getInitials(r.name)}
                     </div>
                     <div>
                       <div className="text-label-md font-display font-bold text-surface-bright">{r.name}</div>
@@ -426,7 +397,7 @@ export default function HomePage() {
           </blockquote>
           <div className="flex items-center justify-center gap-space-sm">
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-display font-bold text-label-lg">
-              RS
+              {getInitials(doctor.name)}
             </div>
             <div className="text-left">
               <div className="text-label-lg font-display font-bold text-on-surface">{doctor.name}</div>
@@ -453,7 +424,7 @@ export default function HomePage() {
                 Ready to consult {doctor.shortName}?
               </h2>
               <p className="text-body-lg text-secondary-fixed max-w-2xl mx-auto leading-relaxed mb-space-xl">
-                Unhurried {doctor.experience}-year expertise. Bilingual Hindi & English. In-clinic or video OPD available 6 days a week.
+                Unhurried {doctor.experienceYears}-year expertise. Bilingual Hindi &amp; English. In-clinic or video OPD available 6 days a week.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-space-md">
                 <Link

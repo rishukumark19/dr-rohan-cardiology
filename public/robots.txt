@@ -1,5 +1,10 @@
 User-agent: *
 Allow: /
+
+# Block patient-private pages from search indexing
+Disallow: /book/confirmation
+Disallow: /book/status
+Disallow: /appointment
 Disallow: /api/
 
 Sitemap: https://drrohansharma.in/sitemap.xml

@@ -6,6 +6,7 @@ import Footer from "@/components/layout/Footer";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
 import CookieConsent from "@/components/ui/CookieConsent";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { doctor } from "@/config/doctor";
 
@@ -49,12 +50,15 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: doctor.seo.siteName,
-    description: doctor.seo.description,
-    images: ["/og-image.jpg"],
-  },
+  twitter: doctor.seo.twitterHandle
+    ? {
+        card: "summary_large_image",
+        title: doctor.seo.siteName,
+        description: doctor.seo.description,
+        site: doctor.seo.twitterHandle,
+        images: ["/og-image.jpg"],
+      }
+    : undefined,
   robots: {
     index: true,
     follow: true,
@@ -91,13 +95,13 @@ export default function RootLayout({
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: doctor.rating,
-      reviewCount: doctor.reviewCount.replace("+", "").replace(",", ""),
+      reviewCount: doctor.reviewCountRaw,
       bestRating: "5",
       worstRating: "1",
     },
     address: {
       "@type": "PostalAddress",
-      streetAddress: "E-24 Main Market Road, Greater Kailash 1",
+      streetAddress: doctor.clinics[0].address.split(",").slice(0, 2).join(",").trim(),
       addressLocality: "New Delhi",
       addressRegion: "Delhi",
       postalCode: "110048",
@@ -119,9 +123,40 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#00677d" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* Per-clinic Local Business schema for local SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "ItemList",
+              itemListElement: doctor.clinics
+                .filter((c) => !c.isVirtual)
+                .map((c, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  item: {
+                    "@type": "MedicalClinic",
+                    name: c.name,
+                    description: `${doctor.name} — ${doctor.speciality} consultation at ${c.name}`,
+                    telephone: c.phone ?? doctor.phone,
+                    url: `${doctor.seo.domain}/locations`,
+                    address: {
+                      "@type": "PostalAddress",
+                      streetAddress: c.address,
+                      addressCountry: "IN",
+                    },
+                    openingHours: `${c.days} ${c.hours}`,
+                    medicalSpecialty: doctor.speciality,
+                  },
+                })),
+            }),
+          }}
         />
       </head>
       <body
@@ -144,6 +179,7 @@ export default function RootLayout({
 
         <Footer />
         <MobileBottomBar />
+        <ScrollToTop />
         <FloatingWhatsApp />
         <CookieConsent />
         <Analytics />

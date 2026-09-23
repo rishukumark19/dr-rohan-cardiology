@@ -24,16 +24,25 @@ interface BookingData {
 
 const STEPS = ["Patient", "Type", "Clinic", "Date", "Time", "Details", "Review"];
 
-const DAYS = [
-  { label: "Today", date: "Mon, Oct 27" },
-  { label: "Tomorrow", date: "Tue, Oct 28" },
-  { label: "Wed", date: "Wed, Oct 29" },
-  { label: "Thu", date: "Thu, Oct 30" },
-  { label: "Fri", date: "Fri, Oct 31" },
-  { label: "Sat", date: "Sat, Nov 1" },
-];
-
 const TIMES = ["10:00 AM", "10:30 AM", "11:00 AM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "07:00 PM"];
+
+/** Generate the next N calendar days starting from today */
+function generateDays(n = 7) {
+  const days = [];
+  const today = new Date();
+  const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  for (let i = 0; i < n; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push({
+      label: i === 0 ? "Today" : i === 1 ? "Tomorrow" : DAY_NAMES[d.getDay()],
+      date: `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`,
+      dayIndex: d.getDay(),
+    });
+  }
+  return days;
+}
 
 // ─── Helpers ──────────────────────────────────────────────
 function saveBookingToStorage(data: BookingData & { token: string; bookingId: string }) {
@@ -59,6 +68,8 @@ export default function BookPage() {
     reason: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof BookingData, string>>>({});
+
+  const DAYS = generateDays(7);
 
   const selectedClinic = doctor.clinics.find((c) => c.id === booking.clinicId) ?? doctor.clinics[0];
   const filteredClinics = booking.consultType === "video"
@@ -324,20 +335,37 @@ export default function BookPage() {
             <div className="flex flex-col gap-space-md">
               <h2 className="text-headline-sm font-display font-bold text-on-surface">Choose your preferred date</h2>
               <div className="grid grid-cols-3 gap-space-xs">
-                {DAYS.map((d) => (
-                  <button
-                    key={d.label}
-                    onClick={() => set("day", d.label)}
-                    className={`py-space-md px-space-xs rounded-lg text-center transition-all flex flex-col items-center gap-0.5 ${booking.day === d.label ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}
-                  >
-                    <span className="text-label-lg font-display font-bold">{d.label}</span>
-                    <span className={`text-label-sm ${booking.day === d.label ? "text-primary-fixed" : "text-on-surface-variant"}`}>{d.date}</span>
-                  </button>
-                ))}
+                {DAYS.map((d) => {
+                  const isClinicOpen = selectedClinic.daysArray.includes(d.dayIndex);
+                  const isSelected = booking.day === d.label;
+                  return (
+                    <button
+                      key={d.label}
+                      onClick={() => isClinicOpen && set("day", d.label)}
+                      disabled={!isClinicOpen}
+                      title={!isClinicOpen ? `${selectedClinic.shortName} is not open on ${d.date}` : undefined}
+                      className={`py-space-md px-space-xs rounded-lg text-center transition-all flex flex-col items-center gap-0.5 relative ${
+                        !isClinicOpen
+                          ? "bg-surface-container/40 text-outline cursor-not-allowed opacity-50"
+                          : isSelected
+                          ? "bg-primary text-on-primary shadow-glow-cyan-sm"
+                          : "bg-surface-container text-on-surface hover:bg-surface-container-high"
+                      }`}
+                    >
+                      <span className="text-label-lg font-display font-bold">{d.label}</span>
+                      <span className={`text-label-sm ${
+                        !isClinicOpen ? "text-outline" : isSelected ? "text-primary-fixed" : "text-on-surface-variant"
+                      }`}>{d.date}</span>
+                      {!isClinicOpen && (
+                        <span className="text-[9px] font-display font-bold text-outline uppercase tracking-wide mt-0.5">Closed</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
               <div className="bg-surface-container rounded-DEFAULT p-space-sm flex items-start gap-space-xs text-body-sm text-on-surface-variant">
                 <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">info</span>
-                {selectedClinic.name} is open <strong className="text-on-surface">{selectedClinic.days}</strong>, {selectedClinic.hours}.
+                <span>{selectedClinic.name} is open <strong className="text-on-surface">{selectedClinic.days}</strong>, {selectedClinic.hours}.</span>
               </div>
             </div>
           )}

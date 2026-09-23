@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { doctor } from "@/config/doctor";
 
 export const metadata: Metadata = {
@@ -26,7 +27,13 @@ export default function AboutPage() {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary to-primary-container opacity-20 blur-xl" />
                 <div className="absolute inset-2 rounded-full bg-gradient-to-b from-primary-container to-primary shadow-inner opacity-80" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={doctor.photo} alt={doctor.name} className="relative z-10 w-full h-full object-cover object-top rounded-full shadow-xl" style={{ padding: "4px" }} />
+                <Image
+                  src={doctor.photo}
+                  alt={doctor.name}
+                  width={288}
+                  height={288}
+                  className="relative z-10 w-full h-full object-cover object-top rounded-full shadow-xl p-1"
+                />
                 <div className="absolute -bottom-2 right-2 z-20 flex items-center gap-1 bg-surface-container-lowest py-2 px-3 rounded-full shadow-card">
                   <span className="material-symbols-outlined text-[14px] text-tertiary material-symbols-filled">verified</span>
                   <span className="text-label-sm font-display font-bold text-on-surface">NMC {doctor.nmc}</span>
@@ -47,12 +54,12 @@ export default function AboutPage() {
             {/* Bio */}
             <div className="lg:col-span-8 flex flex-col gap-space-lg">
               <div>
-                <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-space-xs">Senior Interventional Cardiologist</div>
+                <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-space-xs">{doctor.title}</div>
                 <h1 className="text-headline-lg-mobile md:text-headline-lg font-display font-extrabold text-on-surface tracking-tight">{doctor.name}</h1>
                 <p className="text-title-md font-display font-semibold text-primary mt-1">{doctor.qualifications}</p>
               </div>
               <p className="text-body-lg text-secondary leading-relaxed">
-                Dr. Rohan Sharma is a Senior Interventional Cardiologist with over {doctor.experience} years of hands-on clinical experience in complex coronary interventions, preventive cardiology, and advanced cardiac device implantation. Trained at the All India Institute of Medical Sciences (AIIMS), New Delhi — one of India&apos;s most prestigious medical institutions — he is a Fellow of the American College of Cardiology (FACC) and the Cardiological Society of India (FCSI).
+                {doctor.name} is a {doctor.title} with over {doctor.experience} years of hands-on clinical experience in complex coronary interventions, preventive cardiology, and advanced cardiac device implantation. Trained at {doctor.institution} — one of India&apos;s most prestigious medical institutions — he is a Fellow of the American College of Cardiology (FACC) and the Cardiological Society of India (FCSI).
               </p>
               <p className="text-body-md text-secondary leading-relaxed">
                 Dr. Sharma is widely recognised for his expertise in trans-radial (wrist-entry) coronary angioplasty, enabling patients to walk within 3 hours of the procedure with same-day discharge in eligible cases. He conducts unhurried 20–30 minute consultations and communicates clinical findings in both Hindi and English, believing that informed patients make better health decisions.

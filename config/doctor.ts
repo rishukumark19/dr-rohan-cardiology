@@ -18,17 +18,29 @@ export const doctor = {
 
   // Key metrics
   experience: "15+",
+  experienceYears: 15,     // Numeric version for calculations
   consultations: "18,000+",
   procedures: "4,500+",
   satisfaction: "99.2%",
   reviewCount: "2,100+",
+  reviewCountRaw: 2100,    // Used for schema.org (numeric, no formatting)
   rating: "4.9",
+
+  // Key stats section — configurable labels & sub-labels
+  stats: [
+    { key: "experience",    label: "Years Practice",       sub: "AIIMS & Senior Fellowships",   icon: "award_star",    color: "text-primary" },
+    { key: "consultations", label: "Consultations",        sub: "Clinical OPD Patients",         icon: "ecg_heart",     color: "text-tertiary" },
+    { key: "procedures",    label: "Radial Interventions", sub: "Wrist-entry Angioplasties",     icon: "blood_pressure", color: "text-primary" },
+    { key: "satisfaction",  label: "Satisfaction",         sub: "Over 2,100+ Reviews",           icon: "thumb_up",      color: "text-tertiary" },
+  ] as { key: "experience" | "consultations" | "procedures" | "satisfaction"; label: string; sub: string; icon: string; color: string }[],
 
   // Contact
   phone: "+91 9810123456",
   phoneRaw: "+919810123456",
   whatsapp: "919810123456",
-  email: "",
+  email: "",               // Leave blank to hide email link in UI
+  videoConsultUrl: "",     // Zoom / Google Meet / Doxy.me link for video OPD (leave blank to use WhatsApp booking)
+  locationDesc: "South Delhi & NCR",  // City/area shown in hero bio — configurable per doctor
   languages: ["Hindi", "English"],
 
   // Coordinator
@@ -63,11 +75,37 @@ export const doctor = {
   ],
 
   // Social / review links
+  // Leave any URL blank ("") to automatically hide that link in the UI
   social: {
-    googleReviews: "",
-    practo: "",
-    linkedin: "",
+    googleReviews: "",   // e.g. "https://g.page/r/..."
+    practo: "",          // e.g. "https://www.practo.com/doctors/..."
+    linkedin: "",        // e.g. "https://linkedin.com/in/..."
   },
+
+  // Patient testimonials — shown on homepage & /reviews page
+  testimonials: [
+    {
+      initials: "VG",
+      name: "Vikram Grover",
+      detail: "Radial Angioplasty • Max Saket",
+      quote: '"Dr. Rohan did my stenting through the wrist. I was walking just 3 hours later and discharged the next morning. His warmth took away 90% of our family\'s anxiety."',
+      color: "bg-primary-container/20 text-primary",
+    },
+    {
+      initials: "AS",
+      name: "Ananya Sengupta",
+      detail: "Preventive Calcium Scoring • GK-1",
+      quote: '"Never felt rushed. Dr. Sharma sat with us for 25 minutes explaining every metric in Hindi and English. He actually removed two redundant medications prescribed elsewhere."',
+      color: "bg-tertiary-container/20 text-tertiary-fixed",
+    },
+    {
+      initials: "RK",
+      name: "Rajesh Khanna",
+      detail: "Post-stent Follow-up • Video OPD",
+      quote: '"Booked via WhatsApp, got confirmation in 8 minutes. The video call was crystal clear. Digital prescription arrived on WhatsApp within 10 minutes of the call ending."',
+      color: "bg-secondary-container/20 text-secondary-fixed-dim",
+    },
+  ],
 
   // Consulting locations
   clinics: [
@@ -205,6 +243,18 @@ export const doctor = {
   // Care philosophy quote
   philosophy:
     '"Treating the human, not just the angiogram. Unhurried 20+ minute consultations with clear bilingual explanations."',
+
+  // Footer specialities list — shown in footer column
+  footerSpecialities: [
+    "Trans-Radial Angioplasty",
+    "Drug-Eluting Stents",
+    "Permanent Pacemaker (AICD)",
+    "Preventive Calcium Score",
+    "Heart Failure Clinic",
+    "2D Echocardiogram",
+    "Resistant Hypertension",
+    "Video Telehealth OPD",
+  ],
 };
 
 export type Clinic = (typeof doctor.clinics)[0];

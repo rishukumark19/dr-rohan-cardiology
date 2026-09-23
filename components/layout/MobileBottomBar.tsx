@@ -1,7 +1,12 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function MobileBottomBar() {
+  const pathname = usePathname();
+  const isBooking = pathname.startsWith("/book");
+
   return (
     <nav
       className="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_24px_rgba(19,27,46,0.06)] md:hidden"
@@ -30,15 +35,22 @@ export default function MobileBottomBar() {
           <span className="text-label-sm font-display font-semibold mt-0.5">WhatsApp</span>
         </a>
 
-        {/* Book CTA — prominent pill */}
+        {/* Book CTA — prominent pill, active state when on /book */}
         <Link
           href="/book"
-          className="flex-1 flex items-center justify-center gap-space-xs min-h-[48px] px-space-md py-2.5 rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold shadow-glow-cyan transition-transform active:scale-[0.98]"
+          className={`flex-1 flex items-center justify-center gap-space-xs min-h-[48px] px-space-md py-2.5 rounded-full text-label-lg font-display font-bold transition-all active:scale-[0.98] ${
+            isBooking
+              ? "bg-primary text-on-primary shadow-glow-cyan"
+              : "bg-primary-container text-on-primary-container shadow-glow-cyan"
+          }`}
         >
-          <span>Book Appointment</span>
-          <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+          <span>{isBooking ? "Booking..." : "Book Appointment"}</span>
+          <span className="material-symbols-outlined text-[20px]">
+            {isBooking ? "check_circle" : "arrow_forward"}
+          </span>
         </Link>
       </div>
     </nav>
   );
 }
+

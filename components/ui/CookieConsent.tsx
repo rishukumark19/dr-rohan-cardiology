@@ -32,8 +32,8 @@ export default function CookieConsent() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-0 inset-x-0 z-[200] bg-inverse-surface text-inverse-on-surface shadow-2xl"
-      style={{ marginBottom: "env(safe-area-inset-bottom, 0px)" }}
+      id="cookie-consent"
+      className="fixed inset-x-0 z-[200] bg-inverse-surface text-inverse-on-surface shadow-2xl bottom-[68px] lg:bottom-0"
     >
       <div className="max-w-7xl mx-auto px-margin py-space-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
         <p className="text-body-sm text-secondary-fixed leading-relaxed">

@@ -8,18 +8,16 @@ import CookieConsent from "@/components/ui/CookieConsent";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-plus-jakarta",
   display: "swap",
 });
 
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
 });
@@ -161,7 +159,11 @@ export default function RootLayout({
       </head>
       <body
         className="bg-surface text-on-surface antialiased"
-        style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
+        style={{ 
+          fontFamily: "var(--font-inter), system-ui, sans-serif",
+          "--color-primary": doctor.brand.primaryColor,
+          "--color-primary-container": doctor.brand.primaryContainer,
+        } as React.CSSProperties}
       >
         {/* Skip to content */}
         <a

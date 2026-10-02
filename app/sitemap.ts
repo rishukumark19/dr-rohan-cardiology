@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = doctor.seo.domain;
@@ -10,15 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/about`,       lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${base}/book`,        lastModified: now, changeFrequency: "weekly",  priority: 0.95 },
     { url: `${base}/locations`,   lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${base}/reviews`,     lastModified: now, changeFrequency: "monthly", priority: 0.75 },
-    { url: `${base}/faq`,         lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${base}/resources`,   lastModified: now, changeFrequency: "weekly",  priority: 0.75 },
-    // Resource articles (SSG pages)
-    { url: `${base}/resources/understanding-ecg-echo`,      lastModified: now, changeFrequency: "monthly", priority: 0.65 },
-    { url: `${base}/resources/when-to-see-specialist`,      lastModified: now, changeFrequency: "monthly", priority: 0.65 },
-    { url: `${base}/resources/trans-radial-angioplasty`,    lastModified: now, changeFrequency: "monthly", priority: 0.65 },
-    { url: `${base}/preparation`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${base}/appointment`, lastModified: now, changeFrequency: "weekly",  priority: 0.5 },
+
     { url: `${base}/privacy`,     lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
     { url: `${base}/disclaimer`,  lastModified: now, changeFrequency: "yearly",  priority: 0.2 },
   ];

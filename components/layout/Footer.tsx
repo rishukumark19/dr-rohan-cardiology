@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function Footer() {
   return (
-    <footer className="bg-inverse-surface text-secondary-fixed font-body pt-space-xl pb-28 md:pb-space-lg">
+    <footer className="bg-inverse-surface text-secondary-fixed font-body pt-space-xl" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1.5rem)' }}>
       <div className="max-w-7xl mx-auto px-margin">
         {/* Main grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl pb-space-xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-space-xl pb-space-xl divide-y divide-outline/10 md:divide-y-0">
 
           {/* Col 1+2: Doctor bio */}
           <div className="lg:col-span-2 space-y-space-sm">
@@ -20,7 +20,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-secondary-fixed-dim text-body-sm leading-relaxed max-w-sm">
-              {doctor.title} • {doctor.qualifications}. {doctor.footerBio}
+              {doctor.footerBio}
             </p>
             <div className="text-label-sm text-outline-variant">
               Delhi Medical Council (NMC) Reg:{" "}
@@ -45,23 +45,33 @@ export default function Footer() {
                 WhatsApp Desk
               </a>
             </div>
+            {/* Social Links */}
+            <div className="flex items-center gap-space-sm pt-space-xs">
+              {doctor.socials.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full bg-surface-container/5 flex items-center justify-center text-outline-variant hover:text-surface-bright hover:bg-surface-container/20 transition-all"
+                  title={s.name}
+                >
+                  <span className="material-symbols-outlined text-[16px]">{s.icon}</span>
+                </a>
+              ))}
+            </div>
           </div>
 
-          {/* Col 3: Patient Links */}
-          <div>
+          {/* Col 3: Quick Links */}
+          <div className="lg:col-span-1 pt-space-md md:pt-0">
             <h4 className="font-display text-label-md text-surface-bright uppercase tracking-wider mb-space-md font-bold">
-              Patient Links
+              Quick Links
             </h4>
             <ul className="space-y-space-sm text-body-sm">
               {[
                 { href: "/about", label: `About ${doctor.shortName}` },
-                { href: "/locations", label: "Consulting Locations & Hours" },
+                { href: "/locations", label: "Locations & Hours" },
                 { href: "/book", label: "Book Consultation" },
-                { href: "/appointment", label: "Manage My Appointment" },
-                { href: "/faq", label: "FAQs" },
-                { href: "/resources", label: "Patient Resources" },
-                { href: "/reviews", label: "Patient Stories" },
-                { href: "/preparation", label: "Pre-Visit Preparation" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-secondary-fixed-dim hover:text-primary-fixed transition-colors">
@@ -72,20 +82,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4: Procedures */}
-          <div>
-            <h4 className="font-display text-label-md text-surface-bright uppercase tracking-wider mb-space-md font-bold">
-              Specialities
-            </h4>
-            <ul className="space-y-space-sm text-body-sm text-secondary-fixed-dim">
-              {doctor.footerSpecialities.map((s) => (
-                <li key={s}>{s}</li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Col 5: Emergency */}
-          <div>
+          {/* Col 4+5: Emergency */}
+          <div className="lg:col-span-2 pt-space-md md:pt-0">
             <h4 className="font-display text-label-md text-surface-bright uppercase tracking-wider mb-space-md font-bold">
               Emergency Care
             </h4>
@@ -96,7 +94,7 @@ export default function Footer() {
               </span>
               <a
                 href={`tel:${doctor.emergency.number}`}
-                className="mt-space-sm flex items-center gap-1.5 px-space-md py-2 rounded-full bg-error text-on-error font-display text-label-md font-bold w-full justify-center"
+                className="mt-space-sm inline-flex items-center gap-1.5 px-space-md py-2 rounded-full bg-error text-on-error font-display text-label-md font-bold justify-center"
               >
                 <span className="material-symbols-outlined text-[18px]">emergency</span>
                 Call {doctor.emergency.number} Now

@@ -1,28 +1,31 @@
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 interface WhatsAppOptions {
-  purpose: "booking" | "inquiry" | "followup" | "cancel" | "reschedule";
+  purpose: "booking" | "inquiry" | "followup" | "cancel" | "reschedule" | "confirmation";
   patientName?: string;
   clinic?: string;
   date?: string;
   time?: string;
+  token?: string;
 }
 
 export function buildWhatsAppUrl(opts: WhatsAppOptions): string {
-  const { purpose, patientName, clinic, date, time } = opts;
+  const { purpose, patientName, clinic, date, time, token } = opts;
   const number = doctor.whatsapp;
 
   let message = "";
 
   switch (purpose) {
+    case "confirmation":
     case "booking":
       message = [
         `Hello Sister Neha 🙏`,
-        `I would like to book an appointment with ${doctor.shortName}.`,
-        patientName ? `Patient Name: ${patientName}` : "",
-        clinic ? `Preferred Clinic: ${clinic}` : "",
-        date ? `Preferred Date: ${date}` : "",
-        time ? `Preferred Time: ${time}` : "",
+        token ? `I have reserved an appointment with ${doctor.shortName}.` : `I would like to book an appointment with ${doctor.shortName}.`,
+        token ? `Token: ${token}` : "",
+        patientName ? `Patient: ${patientName}` : "",
+        clinic ? `Clinic: ${clinic}` : "",
+        date ? `Date: ${date}` : "",
+        time ? `Time: ${time}` : "",
         `Please confirm my slot. Thank you.`,
       ].filter(Boolean).join("\n");
       break;

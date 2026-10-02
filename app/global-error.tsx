@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function GlobalError({

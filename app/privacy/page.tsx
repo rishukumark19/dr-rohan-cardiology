@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 export const metadata: Metadata = { title: "Patient Privacy Policy" };
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-surface py-space-xl pb-28 md:pb-space-xl">
+    <div className="min-h-screen bg-surface py-space-xl" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1.5rem)' }}>
       <div className="max-w-3xl mx-auto px-margin">
         <h1 className="text-headline-lg-mobile md:text-headline-md font-display font-bold text-on-surface mb-space-lg">Patient Privacy Policy</h1>
         <div className="text-body-md text-secondary leading-relaxed flex flex-col gap-space-md">

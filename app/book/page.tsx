@@ -1,32 +1,32 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { doctor } from "@/config/doctor";
-import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
-
-// ─── Types ────────────────────────────────────────────────
-type PatientType = "new" | "existing" | null;
-type ConsultType = "clinic" | "video" | null;
-type BookingState = "form" | "submitted" | "whatsapp" | "call" | "no_slots";
+import { site as doctor } from "@/config/site.config";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 interface BookingData {
-  patientType: PatientType;
-  consultType: ConsultType;
   clinicId: string;
   day: string;
+  dayDate: string;
   time: string;
   name: string;
   phone: string;
   age: string;
   gender: string;
   reason: string;
+  patientType: "new" | "existing";
 }
 
-const STEPS = ["Patient", "Type", "Clinic", "Date", "Time", "Details", "Review"];
+const COMMON_REASONS = [
+  "Chest Pain / Angina",
+  "Post-Stent Follow-up",
+  "Preventive Calcium Score",
+  "Second Opinion",
+  "Hypertension / BP Check",
+  "Routine Heart Checkup",
+];
 
-const TIMES = ["10:00 AM", "10:30 AM", "11:00 AM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "07:00 PM"];
-
-/** Generate the next N calendar days starting from today */
 function generateDays(n = 7) {
   const days = [];
   const today = new Date();
@@ -37,14 +37,25 @@ function generateDays(n = 7) {
     d.setDate(today.getDate() + i);
     days.push({
       label: i === 0 ? "Today" : i === 1 ? "Tomorrow" : DAY_NAMES[d.getDay()],
-      date: `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`,
+      date: `${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`,
+      fullDate: `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`,
       dayIndex: d.getDay(),
     });
   }
   return days;
 }
 
-// ─── Helpers ──────────────────────────────────────────────
+function getClinicTimeSlots(clinicId: string): string[] {
+  if (clinicId === "saket") {
+    return ["10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM"];
+  }
+  if (clinicId === "video") {
+    return ["08:30 PM", "08:50 PM", "09:10 PM", "09:30 PM", "09:50 PM"];
+  }
+  // Default to GK-1 evening OPD
+  return ["04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"];
+}
+
 function saveBookingToStorage(data: BookingData & { token: string; bookingId: string }) {
   try {
     localStorage.setItem("dr-booking", JSON.stringify(data));
@@ -52,477 +63,499 @@ function saveBookingToStorage(data: BookingData & { token: string; bookingId: st
 }
 
 export default function BookPage() {
-  const [step, setStep] = useState(0);
-  const [state, setState] = useState<BookingState>("form");
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [step, setStep] = useState<0 | 1>(0);
+  const [submitting, setSubmitting] = useState(false);
+
+  const DAYS = generateDays(7);
+  const defaultClinic = doctor.clinics[0];
+  const firstValidDay = DAYS.find((d) => defaultClinic.daysArray.includes(d.dayIndex)) ?? DAYS[0];
+  const defaultSlots = getClinicTimeSlots(defaultClinic.id);
+
   const [booking, setBooking] = useState<BookingData>({
-    patientType: null,
-    consultType: null,
-    clinicId: doctor.clinics[0].id,
-    day: "Today",
-    time: "05:00 PM",
+    clinicId: defaultClinic.id,
+    day: firstValidDay.label,
+    dayDate: firstValidDay.fullDate,
+    time: defaultSlots[0],
     name: "",
     phone: "",
     age: "",
-    gender: "",
+    gender: "Male",
     reason: "",
+    patientType: "new",
   });
+
   const [errors, setErrors] = useState<Partial<Record<keyof BookingData, string>>>({});
 
-  const DAYS = generateDays(7);
-
-  const selectedClinic = doctor.clinics.find((c) => c.id === booking.clinicId) ?? doctor.clinics[0];
-  const filteredClinics = booking.consultType === "video"
-    ? doctor.clinics.filter((c) => c.isVirtual)
-    : doctor.clinics.filter((c) => !c.isVirtual);
+  const selectedClinic = doctor.clinics.find((c) => c.id === booking.clinicId) ?? defaultClinic;
+  const availableSlots = getClinicTimeSlots(selectedClinic.id);
 
   function set<K extends keyof BookingData>(key: K, value: BookingData[K]) {
     setBooking((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
   }
 
-  function validateStep(): boolean {
+  function handleClinicChange(clinicId: string) {
+    const nextClinic = doctor.clinics.find((c) => c.id === clinicId) ?? defaultClinic;
+    const validDay = DAYS.find((d) => nextClinic.daysArray.includes(d.dayIndex)) ?? DAYS[0];
+    const slots = getClinicTimeSlots(clinicId);
+
+    setBooking((prev) => ({
+      ...prev,
+      clinicId,
+      day: validDay.label,
+      dayDate: validDay.fullDate,
+      time: slots[0],
+    }));
+  }
+
+  function validateStep0(): boolean {
+    // Clinic and slot are selected by default
+    return true;
+  }
+
+  function validateStep1(): boolean {
     const e: Partial<Record<keyof BookingData, string>> = {};
-    if (step === 5) {
-      if (!booking.name.trim()) e.name = "Please enter patient name";
-      if (!/^[6-9]\d{9}$/.test(booking.phone)) e.phone = "Enter a valid 10-digit mobile number";
-      if (booking.patientType === "new" && !booking.age) e.age = "Please enter patient age";
+    if (!booking.name.trim()) e.name = "Please enter patient name";
+    if (!/^[6-9]\d{9}$/.test(booking.phone.trim())) {
+      e.phone = "Enter a valid 10-digit mobile number";
+    }
+    if (!booking.age.trim()) {
+      e.age = "Please enter patient age";
     }
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
-  function next() {
-    if (!validateStep()) return;
-    if (step < STEPS.length - 1) setStep((s) => s + 1);
+  function handleConfirmAppointment() {
+    if (!validateStep1()) return;
+    setSubmitting(true);
+
+    const token = `RS-${selectedClinic.id.toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const bookingId = `BK${Date.now().toString(36).toUpperCase()}`;
+
+    saveBookingToStorage({
+      ...booking,
+      token,
+      bookingId,
+    });
+
+    router.push("/book/confirmation");
   }
 
-  function back() {
-    if (step > 0) setStep((s) => s - 1);
-  }
-
-  function handleSubmit() {
-    if (!validateStep()) return;
-    setLoading(true);
-    setTimeout(() => {
-      const token = `RS-${booking.clinicId.toUpperCase()}-${(Math.floor(Math.random() * 9000) + 1000)}`;
-      const bookingId = `BK${(Date.now()).toString(36).toUpperCase()}`;
-      saveBookingToStorage({ ...booking, token, bookingId });
-      setLoading(false);
-
-      if (doctor.bookingMode === "whatsapp") {
-        setState("whatsapp");
-        window.open(buildWhatsAppUrl({
-          purpose: "booking",
-          patientName: booking.name,
-          clinic: selectedClinic.name,
-          date: booking.day,
-          time: booking.time,
-        }), "_blank");
-      } else if (doctor.bookingMode === "call") {
-        setState("call");
-      } else {
-        setState("submitted");
-      }
-    }, 1400);
-  }
-
-  // ── Submitted / Done states ────────────────────────────
-  if (state === "submitted") {
-    const stored = (() => { try { return JSON.parse(localStorage.getItem("dr-booking") ?? "{}"); } catch { return {}; } })();
-    return (
-      <div className="min-h-screen bg-surface-container-low flex items-start justify-center py-space-xl px-margin pb-24 md:pb-space-xl">
-        <div className="max-w-md w-full flex flex-col gap-space-md animate-fade-in">
-          <div className="bg-surface-container-lowest rounded-xl shadow-card p-space-xl text-center flex flex-col items-center gap-space-md">
-            <div className="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center text-on-tertiary shadow-card">
-              <span className="material-symbols-outlined text-[32px] material-symbols-filled">verified</span>
-            </div>
-            <div>
-              <h1 className="text-headline-sm font-display font-bold text-on-surface">Token Registered!</h1>
-              <p className="text-body-md text-on-surface-variant mt-space-xs">
-                {doctor.coordinator.name} will WhatsApp your confirmed slot within 10 minutes.
-              </p>
-              <p className="text-label-sm text-on-surface-variant mt-1">Ref: <strong className="text-on-surface">{stored.token}</strong></p>
-            </div>
-            <div className="bg-surface-container rounded-lg p-space-md w-full text-left grid grid-cols-2 gap-space-xs text-body-sm">
-              <div><span className="text-on-surface-variant">Patient:</span> <strong className="text-on-surface">{stored.name}</strong></div>
-              <div><span className="text-on-surface-variant">Clinic:</span> <strong className="text-on-surface">{selectedClinic.shortName}</strong></div>
-              <div><span className="text-on-surface-variant">Date:</span> <strong className="text-on-surface">{stored.day}</strong></div>
-              <div><span className="text-on-surface-variant">Time:</span> <strong className="text-on-surface">{stored.time}</strong></div>
-              <div><span className="text-on-surface-variant">Type:</span> <strong className="text-on-surface">{stored.patientType === "new" ? "New Patient" : "Existing Patient"}</strong></div>
-              <div><span className="text-on-surface-variant">Fee:</span> <strong className="text-primary">₹{selectedClinic.fee.toLocaleString()}</strong></div>
-            </div>
-            <div className="flex flex-col w-full gap-space-xs">
-              <Link href="/book/confirmation" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-primary-container text-on-primary-container text-label-lg font-display font-bold hover:opacity-90 transition-all">
-                View Digital OPD Pass <span className="material-symbols-outlined text-[20px]">qr_code_2</span>
-              </Link>
-              <Link href="/book/status" className="flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
-                Track Appointment Status
-              </Link>
-            </div>
-          </div>
-          <div className="bg-error-container/60 rounded-DEFAULT p-space-md flex items-start gap-space-sm">
-            <span className="material-symbols-outlined text-error text-[20px] shrink-0 mt-0.5 material-symbols-filled">emergency</span>
-            <p className="text-body-sm text-on-error-container">Emergency? Call <a href="tel:102" className="font-bold underline">102</a> / <a href="tel:108" className="font-bold underline">108</a> immediately — don&apos;t wait for OPD.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (state === "whatsapp") {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center px-margin py-space-xl pb-24">
-        <div className="max-w-sm w-full bg-surface-container-lowest rounded-xl shadow-card p-space-xl text-center flex flex-col items-center gap-space-lg animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center text-on-tertiary"><span className="material-symbols-outlined text-[32px]">chat</span></div>
-          <div><h1 className="text-headline-sm font-display font-bold text-on-surface">WhatsApp Opened</h1><p className="text-body-md text-on-surface-variant mt-space-xs">{doctor.coordinator.name} will confirm your slot. Keep WhatsApp open.</p></div>
-          <Link href="/" className="text-primary text-label-md font-display font-semibold hover:underline">← Back to Home</Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (state === "call") {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center px-margin py-space-xl pb-24">
-        <div className="max-w-sm w-full bg-surface-container-lowest rounded-xl shadow-card p-space-xl text-center flex flex-col items-center gap-space-lg animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary"><span className="material-symbols-outlined text-[32px]">call</span></div>
-          <div><h1 className="text-headline-sm font-display font-bold text-on-surface">Call to Confirm</h1><p className="text-body-md text-on-surface-variant mt-space-xs">Call our clinic reception to confirm your preferred slot.</p></div>
-          <a href={buildCallUrl()} className="w-full flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold hover:opacity-90"><span className="material-symbols-outlined text-[22px]">call</span>{doctor.phone}</a>
-          <Link href="/" className="text-primary text-label-md font-display font-semibold hover:underline">← Back to Home</Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (state === "no_slots") {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center px-margin py-space-xl pb-24">
-        <div className="max-w-sm w-full bg-surface-container-lowest rounded-xl shadow-card p-space-xl text-center flex flex-col items-center gap-space-lg animate-fade-in">
-          <span className="material-symbols-outlined text-[48px] text-outline">calendar_off</span>
-          <div><h1 className="text-headline-sm font-display font-bold text-on-surface">No Slots Available</h1><p className="text-body-md text-on-surface-variant mt-space-xs">No slots available for your selected date and clinic. Try another date or reach us directly.</p></div>
-          <div className="flex flex-col w-full gap-space-xs">
-            <button onClick={() => { setState("form"); setStep(3); }} className="py-[14px] rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all">Choose Another Date</button>
-            <a href={buildWhatsAppUrl({ purpose: "booking" })} target="_blank" rel="noopener noreferrer" className="py-[14px] rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-semibold flex items-center justify-center gap-1 hover:opacity-90 active:scale-[0.98] transition-all"><span className="material-symbols-outlined text-[18px]">chat</span>WhatsApp Clinic</a>
-            <a href={buildCallUrl()} className="py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold flex items-center justify-center gap-1 hover:bg-surface-container-high transition-colors"><span className="material-symbols-outlined text-[18px]">call</span>Call Clinic</a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ── WIZARD FORM ──────────────────────────────────────
   return (
-    <div className="min-h-screen bg-surface-container-low pb-28 md:pb-0">
+    <div className="min-h-screen bg-surface-container-low" style={{ paddingBottom: "calc(var(--mobile-bar-height, 0px) + 2rem)" }}>
       <div className="max-w-2xl mx-auto px-margin py-space-xl">
 
-        {/* Progress */}
+        {/* Header & Steps */}
         <div className="mb-space-lg">
-          <div className="flex items-center justify-between mb-space-xs">
-            <h1 className="text-headline-sm font-display font-bold text-on-surface">Book a Consultation</h1>
-            <span className="text-label-md font-display font-semibold text-on-surface-variant">Step {step + 1} of {STEPS.length}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <span className="text-primary text-label-sm font-display font-bold uppercase tracking-wider">
+                Direct OPD Desk
+              </span>
+              <h1 className="text-headline-md font-display font-extrabold text-on-surface">
+                Book Consultation
+              </h1>
+            </div>
+            <span className="text-label-sm font-display font-bold px-3 py-1 rounded-full bg-surface-container text-on-surface-variant">
+              Step {step + 1} of 2
+            </span>
           </div>
 
-          {/* Desktop full circle stepper */}
-          <div className="hidden sm:flex gap-space-xs items-center">
-            {STEPS.map((label, i) => (
-              <div key={label} className="flex items-center gap-space-xs flex-1 last:flex-none">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-label-sm font-display font-bold shrink-0 transition-all ${i < step ? "bg-tertiary text-on-tertiary" : i === step ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-outline"}`}>
-                  {i < step ? <span className="material-symbols-outlined text-[16px]">check</span> : i + 1}
-                </div>
-                {i < STEPS.length - 1 && <div className={`h-0.5 flex-1 rounded-full transition-all ${i < step ? "bg-tertiary" : "bg-outline-variant"}`} />}
-              </div>
-            ))}
-          </div>
-
-          {/* Mobile compact progress bar */}
-          <div className="sm:hidden w-full bg-surface-container rounded-full h-2 overflow-hidden my-2">
+          {/* Progress bar */}
+          <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden my-3">
             <div
               className="bg-primary h-full rounded-full transition-all duration-300"
-              style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+              style={{ width: step === 0 ? "50%" : "100%" }}
             />
           </div>
-
-          <div className="mt-space-xs text-body-sm text-on-surface-variant font-display font-semibold">{STEPS[step]}</div>
+          <div className="text-body-sm font-display font-semibold text-on-surface-variant">
+            {step === 0 ? "1. Select Clinic & Preferred Slot" : "2. Patient Details & Instant Confirmation"}
+          </div>
         </div>
 
-        {/* Step card */}
-        <div className="bg-surface-container-lowest rounded-xl shadow-card p-space-lg animate-fade-in" key={step}>
-
-          {/* ── STEP 0: New vs Existing ─── */}
-          {step === 0 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">Are you a new or existing patient?</h2>
-              <p className="text-body-md text-on-surface-variant">This helps us personalise your booking experience.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md mt-space-sm">
-                {[
-                  { id: "new" as PatientType, label: "New Patient", desc: "First time visiting Dr. Sharma", icon: "person_add" },
-                  { id: "existing" as PatientType, label: "Existing Patient", desc: "I have consulted before", icon: "person_check" },
-                ].map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => { set("patientType", option.id); setStep(1); }}
-                    className={`p-space-lg rounded-lg border-2 text-left transition-all flex flex-col gap-space-sm hover:-translate-y-0.5 ${booking.patientType === option.id ? "border-primary bg-primary-container/10" : "border-outline-variant hover:border-primary/40"}`}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-[24px]">{option.icon}</span>
-                    </div>
-                    <div>
-                      <div className="text-label-lg font-display font-bold text-on-surface">{option.label}</div>
-                      <div className="text-body-sm text-on-surface-variant mt-0.5">{option.desc}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 1: Consultation Type ─── */}
-          {step === 1 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">How would you like to consult?</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md mt-space-sm">
-                {[
-                  { id: "clinic" as ConsultType, label: "In-Clinic Visit", desc: "GK-1, Max Saket or Medanta", icon: "local_hospital", badge: "₹1,500–₹1,800" },
-                  { id: "video" as ConsultType, label: "Video Consultation", desc: "Mon–Sat, 8:30–10 PM. Digital Rx on WhatsApp.", icon: "videocam", badge: "₹1,200" },
-                ].map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => { set("consultType", option.id); setStep(2); }}
-                    className={`p-space-lg rounded-lg border-2 text-left transition-all flex flex-col gap-space-sm hover:-translate-y-0.5 ${booking.consultType === option.id ? "border-primary bg-primary-container/10" : "border-outline-variant hover:border-primary/40"}`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
-                        <span className="material-symbols-outlined text-[24px]">{option.icon}</span>
-                      </div>
-                      <span className="text-label-md font-display font-bold text-primary bg-primary-fixed px-space-sm py-0.5 rounded-full">{option.badge}</span>
-                    </div>
-                    <div>
-                      <div className="text-label-lg font-display font-bold text-on-surface">{option.label}</div>
-                      <div className="text-body-sm text-on-surface-variant mt-0.5">{option.desc}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 2: Select Clinic ─── */}
-          {step === 2 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">Choose your clinic</h2>
-              <div className="flex flex-col gap-space-sm">
-                {filteredClinics.map((clinic) => (
-                  <button
-                    key={clinic.id}
-                    onClick={() => set("clinicId", clinic.id)}
-                    className={`p-space-md rounded-lg border-2 text-left transition-all flex items-start justify-between gap-space-md ${booking.clinicId === clinic.id ? "border-primary bg-primary-container/10" : "border-outline-variant hover:border-primary/40"}`}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-space-xs">
-                        <span className="text-label-lg font-display font-bold text-on-surface">{clinic.shortName}</span>
-                        {clinic.type === "flagship" && <span className="text-label-sm font-display font-bold text-on-tertiary-fixed bg-tertiary-fixed px-space-xs py-0.5 rounded-full">Flagship</span>}
-                      </div>
-                      <p className="text-body-sm text-on-surface-variant mt-0.5">{clinic.isVirtual ? clinic.address : clinic.address.split(",").slice(0, 2).join(",")}</p>
-                      <div className="flex items-center gap-space-xs mt-space-xs text-body-sm text-on-surface-variant">
-                        <span className="material-symbols-outlined text-[14px] text-primary">schedule</span>
-                        {clinic.days} · {clinic.hours}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="text-label-lg font-display font-extrabold text-primary">₹{clinic.fee.toLocaleString()}</span>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${booking.clinicId === clinic.id ? "border-primary bg-primary" : "border-outline-variant"}`}>
-                        {booking.clinicId === clinic.id && <span className="material-symbols-outlined text-on-primary text-[14px]">check</span>}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 3: Select Day ─── */}
-          {step === 3 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">Choose your preferred date</h2>
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-space-xs">
-                {DAYS.map((d) => {
-                  const isClinicOpen = selectedClinic.daysArray.includes(d.dayIndex);
-                  const isSelected = booking.day === d.label;
+        {/* STEP 0: Select Clinic, Date, and Time */}
+        {step === 0 && (
+          <div className="space-y-space-lg">
+            {/* Clinic Selection */}
+            <div className="bg-surface-container-lowest rounded-2xl shadow-card p-5 sm:p-space-lg border border-surface-container">
+              <h2 className="text-title-md font-display font-bold text-on-surface mb-space-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-primary">location_on</span>
+                Select Consultation Location
+              </h2>
+              <div className="grid grid-cols-1 gap-space-sm">
+                {doctor.clinics.map((clinic) => {
+                  const isSelected = booking.clinicId === clinic.id;
                   return (
                     <button
-                      key={d.label}
-                      onClick={() => isClinicOpen && set("day", d.label)}
-                      disabled={!isClinicOpen}
-                      title={!isClinicOpen ? `${selectedClinic.shortName} is not open on ${d.date}` : undefined}
-                      className={`py-space-md px-1 sm:px-space-xs rounded-lg text-center transition-all flex flex-col items-center justify-center gap-0.5 relative min-h-[64px] ${
-                        !isClinicOpen
-                          ? "bg-surface-container/40 text-outline cursor-not-allowed opacity-50"
-                          : isSelected
-                          ? "bg-primary text-on-primary shadow-glow-cyan-sm"
-                          : "bg-surface-container text-on-surface hover:bg-surface-container-high"
+                      key={clinic.id}
+                      type="button"
+                      onClick={() => handleClinicChange(clinic.id)}
+                      className={`text-left p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                        isSelected
+                          ? "border-primary bg-primary-container/10 shadow-sm ring-1 ring-primary"
+                          : "border-outline-variant/30 hover:border-outline-variant hover:bg-surface-container-low"
                       }`}
                     >
-                      <span className="text-label-md sm:text-label-lg font-display font-bold leading-tight">{d.label}</span>
-                      <span className={`text-[10px] sm:text-label-sm leading-tight ${
-                        !isClinicOpen ? "text-outline" : isSelected ? "text-primary-fixed" : "text-on-surface-variant"
-                      }`}>{d.date}</span>
-                      {!isClinicOpen && (
-                        <span className="text-[9px] font-display font-bold text-outline uppercase tracking-wide mt-0.5">Closed</span>
-                      )}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[11px] font-display font-bold px-2 py-0.5 rounded-full ${
+                            clinic.isVirtual
+                              ? "bg-primary-container/20 text-primary"
+                              : clinic.type === "flagship"
+                              ? "bg-tertiary-fixed text-on-tertiary-fixed"
+                              : "bg-surface-container text-on-surface-variant"
+                          }`}>
+                            {clinic.badge}
+                          </span>
+                          <span className="font-display font-bold text-on-surface text-label-lg">
+                            {clinic.name}
+                          </span>
+                        </div>
+                        <p className="text-body-sm text-on-surface-variant">
+                          {clinic.days} • {clinic.hours}
+                        </p>
+                        <p className="text-[12px] text-outline font-medium">
+                          {clinic.notes}
+                        </p>
+                      </div>
+
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-outline-variant/20">
+                        <span className="text-title-md font-display font-extrabold text-primary">
+                          ₹{clinic.fee.toLocaleString()}
+                        </span>
+                        <span className="text-[11px] text-on-surface-variant font-medium">
+                          {clinic.isVirtual ? "Digital Rx" : "Pay at Clinic"}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
               </div>
-              <div className="bg-surface-container rounded-DEFAULT p-space-sm flex items-start gap-space-xs text-body-sm text-on-surface-variant">
-                <span className="material-symbols-outlined text-[16px] text-primary mt-0.5">info</span>
-                <span>{selectedClinic.name} is open <strong className="text-on-surface">{selectedClinic.days}</strong>, {selectedClinic.hours}.</span>
-              </div>
             </div>
-          )}
 
-          {/* ── STEP 4: Select Time ─── */}
-          {step === 4 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">Choose a time window</h2>
-              <p className="text-body-sm text-on-surface-variant">Your preferred time will be sent to the clinic for confirmation.</p>
-              <div className="grid grid-cols-2 gap-space-xs">
-                {TIMES.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => set("time", t)}
-                    className={`py-space-sm rounded-full text-label-md font-display font-semibold text-center transition-all ${booking.time === t ? "bg-primary text-on-primary shadow-glow-cyan-sm" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ── STEP 5: Patient Details ─── */}
-          {step === 5 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">
-                {booking.patientType === "new" ? "New Patient Details" : "Confirm Your Details"}
+            {/* Date Selection */}
+            <div className="bg-surface-container-lowest rounded-2xl shadow-card p-5 sm:p-space-lg border border-surface-container">
+              <h2 className="text-title-md font-display font-bold text-on-surface mb-space-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-primary">calendar_month</span>
+                Select Preferred Date
               </h2>
-              <div className="flex flex-col gap-space-md">
-                {/* Name */}
-                <div>
-                  <label htmlFor="name" className="text-label-sm font-display font-bold text-on-surface block mb-1">Patient Full Name <span className="text-error">*</span></label>
-                  <input id="name" type="text" value={booking.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Ramesh Kumar Sharma" className={`w-full px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.name ? "ring-2 ring-error" : ""}`} />
-                  {errors.name && <p className="text-label-sm text-error mt-1">{errors.name}</p>}
-                </div>
-                {/* Phone */}
-                <div>
-                  <label htmlFor="phone" className="text-label-sm font-display font-bold text-on-surface block mb-1">WhatsApp Mobile (+91) <span className="text-error">*</span></label>
-                  <div className="flex gap-space-xs">
-                    <span className="px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-label-md font-display font-semibold shrink-0">+91</span>
-                    <input id="phone" type="tel" value={booking.phone} onChange={(e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder="98100 XXXXX" maxLength={10} className={`w-full px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.phone ? "ring-2 ring-error" : ""}`} />
-                  </div>
-                  {errors.phone && <p className="text-label-sm text-error mt-1">{errors.phone}</p>}
-                </div>
-                {/* Age & Gender (new patients only) */}
-                {booking.patientType === "new" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
-                    <div>
-                      <label htmlFor="age" className="text-label-sm font-display font-bold text-on-surface block mb-1">Age <span className="text-error">*</span></label>
-                      <input id="age" type="number" min="1" max="120" value={booking.age} onChange={(e) => set("age", e.target.value)} placeholder="e.g. 52" className={`w-full px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.age ? "ring-2 ring-error" : ""}`} />
-                      {errors.age && <p className="text-label-sm text-error mt-1">{errors.age}</p>}
-                    </div>
-                    <div>
-                      <label className="text-label-sm font-display font-bold text-on-surface block mb-1">Gender</label>
-                      <div className="flex gap-space-xs">
-                        {["Male", "Female", "Other"].map((g) => (
-                          <button key={g} type="button" onClick={() => set("gender", g)} className={`flex-1 py-3 rounded-DEFAULT text-label-sm font-display font-semibold transition-all min-h-[44px] ${booking.gender === g ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface hover:bg-surface-container-high"}`}>{g}</button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-                {/* Reason (optional) */}
-                <div>
-                  <label htmlFor="reason" className="text-label-sm font-display font-bold text-on-surface block mb-1">Reason for Consultation <span className="text-on-surface-variant font-normal">(optional)</span></label>
-                  <input id="reason" type="text" value={booking.reason} onChange={(e) => set("reason", e.target.value)} placeholder="e.g. Chest pain, follow-up after ECG, second opinion..." className="w-full px-space-md py-3 rounded-DEFAULT bg-surface-container text-on-surface text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {DAYS.map((d) => {
+                  const isOpen = selectedClinic.daysArray.includes(d.dayIndex);
+                  const isSelected = booking.day === d.label;
+                  return (
+                    <button
+                      key={d.label}
+                      type="button"
+                      disabled={!isOpen}
+                      onClick={() => {
+                        if (isOpen) {
+                          setBooking((prev) => ({
+                            ...prev,
+                            day: d.label,
+                            dayDate: d.fullDate,
+                          }));
+                        }
+                      }}
+                      className={`p-3 rounded-xl text-center transition-all flex flex-col items-center justify-center gap-0.5 min-h-[64px] border ${
+                        !isOpen
+                          ? "bg-surface-container/30 border-transparent text-outline cursor-not-allowed opacity-50"
+                          : isSelected
+                          ? "bg-primary border-primary text-on-primary shadow-glow-cyan-sm"
+                          : "bg-surface-container-low border-outline-variant/30 text-on-surface hover:bg-surface-container"
+                      }`}
+                    >
+                      <span className="text-label-md font-display font-bold leading-tight">
+                        {d.label}
+                      </span>
+                      <span className={`text-[11px] leading-tight ${isSelected ? "text-primary-fixed" : "text-on-surface-variant"}`}>
+                        {d.date}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[12px] text-on-surface-variant mt-3 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[15px] text-primary">info</span>
+                Only dates when {selectedClinic.shortName} OPD is in session are selectable.
+              </p>
+            </div>
+
+            {/* Time Slot Selection */}
+            <div className="bg-surface-container-lowest rounded-2xl shadow-card p-5 sm:p-space-lg border border-surface-container">
+              <h2 className="text-title-md font-display font-bold text-on-surface mb-space-sm flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-primary">schedule</span>
+                Select Time Slot
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {availableSlots.map((slot) => {
+                  const isSelected = booking.time === slot;
+                  return (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => set("time", slot)}
+                      className={`py-3 px-2 rounded-xl text-label-md font-display font-bold text-center transition-all border min-h-[46px] ${
+                        isSelected
+                          ? "bg-primary border-primary text-on-primary shadow-glow-cyan-sm"
+                          : "bg-surface-container-low border-outline-variant/30 text-on-surface hover:bg-surface-container"
+                      }`}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          )}
 
-          {/* ── STEP 6: Review ─── */}
-          {step === 6 && (
-            <div className="flex flex-col gap-space-md">
-              <h2 className="text-headline-sm font-display font-bold text-on-surface">Review Your Appointment</h2>
-              <div className="bg-surface-container rounded-lg p-space-md grid grid-cols-2 gap-space-sm text-body-sm">
-                {[
-                  ["Doctor", doctor.name],
-                  ["Speciality", doctor.speciality],
-                  ["Patient Type", booking.patientType === "new" ? "New Patient" : "Existing Patient"],
-                  ["Clinic", selectedClinic.name],
-                  ["Date", booking.day],
-                  ["Time", booking.time],
-                  ["Patient", booking.name],
-                  ["Mobile", `+91 ${booking.phone}`],
-                  ...(booking.age ? [["Age", `${booking.age} Yrs${booking.gender ? ` · ${booking.gender}` : ""}`]] : []),
-                  ...(booking.reason ? [["Reason", booking.reason]] : []),
-                ].map(([label, value]) => (
-                  <div key={label} className={label === "Clinic" || label === "Doctor" || label === "Reason" ? "col-span-2" : ""}>
-                    <span className="text-on-surface-variant uppercase tracking-wider text-label-sm block">{label}</span>
-                    <span className="font-display font-semibold text-on-surface">{value}</span>
-                  </div>
-                ))}
-                <div className="col-span-2 pt-space-xs border-t border-surface-container-high">
-                  <span className="text-on-surface-variant uppercase tracking-wider text-label-sm block">Consultation Fee</span>
-                  <span className="text-title-md font-display font-extrabold text-primary">₹{selectedClinic.fee.toLocaleString()}</span>
-                  <span className="text-body-sm text-tertiary block">Pay at clinic via UPI / Cash — no advance</span>
-                </div>
-              </div>
-              <div className="text-body-sm text-on-surface-variant bg-surface-container-low rounded-DEFAULT px-space-md py-space-sm">
-                {doctor.bookingMode === "confirmation"
-                  ? "Your slot request will be reviewed. Our coordinator will WhatsApp confirmation within 10 minutes."
-                  : "Your booking will be confirmed immediately. You will receive a digital OPD pass."}
-              </div>
+            {/* Continue Button */}
+            <div className="flex justify-end pt-2">
               <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-space-sm py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                type="button"
+                onClick={() => {
+                  if (validateStep0()) setStep(1);
+                }}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-3.5 rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-95 active:scale-[0.98] transition-all min-h-[50px]"
               >
-                {loading ? (
-                  <><span className="animate-spin material-symbols-outlined text-[20px]">progress_activity</span>Confirming...</>
-                ) : (
-                  <>{doctor.bookingMode === "confirmation" ? "Request Appointment" : "Confirm Appointment"}<span className="material-symbols-outlined text-[20px]">check_circle</span></>
-                )}
+                <span>Continue to Patient Details</span>
+                <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
               </button>
-              <div className="flex gap-space-md justify-center text-label-sm">
-                <a href={buildWhatsAppUrl({ purpose: "booking", clinic: selectedClinic.name })} target="_blank" rel="noopener noreferrer" className="text-tertiary font-display font-semibold flex items-center gap-1 hover:underline"><span className="material-symbols-outlined text-[16px]">chat</span>Book via WhatsApp instead</a>
-                <span className="text-outline">·</span>
-                <a href={buildCallUrl()} className="text-primary font-display font-semibold flex items-center gap-1 hover:underline"><span className="material-symbols-outlined text-[16px]">call</span>Call Clinic</a>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 1: Patient Details & Instant Confirmation */}
+        {step === 1 && (
+          <div className="space-y-space-lg">
+            {/* Booking Summary Box */}
+            <div className="bg-surface-container rounded-2xl p-5 border border-outline-variant/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <span className="text-[11px] font-display font-bold uppercase tracking-wider text-primary">
+                  Selected Appointment Slot
+                </span>
+                <div className="text-title-md font-display font-extrabold text-on-surface mt-0.5">
+                  {selectedClinic.name}
+                </div>
+                <div className="text-body-sm text-on-surface-variant flex items-center gap-2 mt-1">
+                  <span>{booking.dayDate}</span>
+                  <span>•</span>
+                  <span className="font-bold text-primary">{booking.time}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-[11px] text-on-surface-variant font-medium uppercase tracking-wider">Consultation Fee</div>
+                  <div className="text-title-md font-display font-extrabold text-primary">
+                    ₹{selectedClinic.fee.toLocaleString()}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setStep(0)}
+                  className="text-label-sm font-display font-bold text-primary hover:underline px-3 py-1.5 rounded-lg bg-surface-container-high"
+                >
+                  Change Slot
+                </button>
               </div>
             </div>
-          )}
 
-        </div>
+            {/* Form Fields */}
+            <div className="bg-surface-container-lowest rounded-2xl shadow-card p-5 sm:p-space-lg border border-surface-container space-y-space-md">
+              <h2 className="text-title-md font-display font-bold text-on-surface">
+                Patient Information
+              </h2>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-space-md gap-space-sm">
-          {step > 0 ? (
-            <button onClick={back} className="flex items-center justify-center gap-space-xs px-space-lg py-3 rounded-full bg-surface-container text-on-surface text-label-md font-display font-semibold hover:bg-surface-container-high transition-all min-h-[48px]">
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span> Back
-            </button>
-          ) : <div />}
+              {/* Patient Type */}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => set("patientType", "new")}
+                  className={`flex-1 py-2 rounded-xl text-label-sm font-display font-bold transition-all border ${
+                    booking.patientType === "new"
+                      ? "bg-primary text-on-primary border-primary"
+                      : "bg-surface-container-low border-outline-variant/30 text-on-surface"
+                  }`}
+                >
+                  New Patient
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set("patientType", "existing")}
+                  className={`flex-1 py-2 rounded-xl text-label-sm font-display font-bold transition-all border ${
+                    booking.patientType === "existing"
+                      ? "bg-primary text-on-primary border-primary"
+                      : "bg-surface-container-low border-outline-variant/30 text-on-surface"
+                  }`}
+                >
+                  Follow-up Patient
+                </button>
+              </div>
 
-          {step < 6 && step > 1 && (
-            <button onClick={next} className="flex-1 sm:flex-none flex items-center justify-center gap-space-xs px-space-xl py-3 rounded-full bg-primary text-on-primary text-label-md font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
-              Continue <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </button>
-          )}
-        </div>
+              {/* Full Name */}
+              <div>
+                <label className="block text-label-sm font-display font-bold text-on-surface mb-1">
+                  Patient Full Name <span className="text-error">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Ramesh Chandra"
+                  value={booking.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+                {errors.name && <p className="text-error text-body-sm mt-1">{errors.name}</p>}
+              </div>
 
-        {/* Emergency note */}
-        <div className="mt-space-lg bg-error-container/60 rounded-DEFAULT p-space-md flex items-start gap-space-sm">
-          <span className="material-symbols-outlined text-error text-[20px] shrink-0 mt-0.5 material-symbols-filled">emergency</span>
-          <p className="text-body-sm text-on-error-container"><strong>Emergency?</strong> Do not book an OPD slot. Call <a href="tel:102" className="font-bold underline">102</a> / <a href="tel:108" className="font-bold underline">108</a> or go directly to <strong>{doctor.emergency.hospital}</strong> 24/7 ER.</p>
-        </div>
+              {/* Mobile Phone */}
+              <div>
+                <label className="block text-label-sm font-display font-bold text-on-surface mb-1">
+                  Mobile Number (WhatsApp) <span className="text-error">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-display font-bold text-label-md">
+                    +91
+                  </span>
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    placeholder="9810123456"
+                    value={booking.phone}
+                    onChange={(e) => set("phone", e.target.value.replace(/\D/g, ""))}
+                    className="w-full pl-14 pr-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-mono"
+                  />
+                </div>
+                {errors.phone && <p className="text-error text-body-sm mt-1">{errors.phone}</p>}
+                <p className="text-[11px] text-on-surface-variant mt-1">
+                  Slot token and prescription details will be sent to this number.
+                </p>
+              </div>
+
+              {/* Age and Gender */}
+              <div className="grid grid-cols-2 gap-space-sm">
+                <div>
+                  <label className="block text-label-sm font-display font-bold text-on-surface mb-1">
+                    Age <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="120"
+                    placeholder="Years"
+                    value={booking.age}
+                    onChange={(e) => set("age", e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  />
+                  {errors.age && <p className="text-error text-body-sm mt-1">{errors.age}</p>}
+                </div>
+                <div>
+                  <label className="block text-label-sm font-display font-bold text-on-surface mb-1">
+                    Gender
+                  </label>
+                  <select
+                    value={booking.gender}
+                    onChange={(e) => set("gender", e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Consultation Reason */}
+              <div>
+                <label className="block text-label-sm font-display font-bold text-on-surface mb-1">
+                  Reason for Consultation (Optional)
+                </label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {COMMON_REASONS.map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => set("reason", r)}
+                      className={`text-[11px] font-display font-semibold px-2.5 py-1 rounded-full transition-colors ${
+                        booking.reason === r
+                          ? "bg-primary text-on-primary"
+                          : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"
+                      }`}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Or describe briefly (e.g. breathless on exertion, previous angiogram CD)"
+                  value={booking.reason}
+                  onChange={(e) => set("reason", e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              {/* Pay at Clinic Guarantee Note */}
+              <div className="p-3.5 rounded-xl bg-primary-container/10 border border-primary-container/20 flex items-start gap-2.5">
+                <span className="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5">
+                  verified
+                </span>
+                <div className="text-body-sm text-on-surface">
+                  <strong>Zero Advance Payment Required:</strong> Your slot token is reserved instantly. Consultation fee of ₹{selectedClinic.fee.toLocaleString()} is collected at the clinic counter via UPI, Card, or Cash.
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="pt-2 flex flex-col sm:flex-row gap-space-sm">
+                <button
+                  type="button"
+                  onClick={() => setStep(0)}
+                  className="px-6 py-3.5 rounded-full bg-surface-container text-on-surface font-display font-bold text-label-md hover:bg-surface-container-high transition-all"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={handleConfirmAppointment}
+                  className="flex-1 inline-flex items-center justify-center gap-space-xs py-3.5 px-space-xl rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-95 active:scale-[0.98] transition-all disabled:opacity-50 min-h-[50px]"
+                >
+                  {submitting ? (
+                    <span>Reserving Slot...</span>
+                  ) : (
+                    <>
+                      <span>Confirm Appointment (Pay at Clinic)</span>
+                      <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Direct WhatsApp Alternative */}
+              <div className="text-center pt-2 border-t border-outline-variant/20">
+                <span className="text-[12px] text-on-surface-variant block mb-2">
+                  Prefer direct personal assistance from our clinical care desk?
+                </span>
+                <a
+                  href={buildWhatsAppUrl({
+                    purpose: "booking",
+                    patientName: booking.name || undefined,
+                    clinic: selectedClinic.shortName,
+                    date: booking.dayDate,
+                    time: booking.time,
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-space-lg py-2.5 rounded-full bg-[#25D366]/10 text-[#128C7E] hover:bg-[#25D366]/20 font-display font-bold text-label-sm transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-[#25D366]">chat</span>
+                  Book via WhatsApp with Sister Neha
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 import { getNextOpdSummary } from "@/lib/utils";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 /**
  * NextOpdBadge — dynamically calculates the next OPD availability
@@ -11,24 +11,27 @@ export default function NextOpdBadge() {
   const { label, clinicName, hours, isToday } = getNextOpdSummary(doctor.clinics);
 
   return (
-    <div className="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded-2xl sm:rounded-full bg-surface-container shadow-card mb-space-lg max-w-full">
-      <span className="relative flex h-2 w-2 shrink-0">
+    <div className="inline-flex items-center gap-space-sm px-space-md py-2 rounded-full bg-surface-container/50 backdrop-blur-md border border-outline-variant/30 shadow-sm mb-space-md max-w-full hover:bg-surface-container/70 transition-colors duration-300">
+      <span className="relative flex h-2.5 w-2.5 shrink-0">
         <span
           className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-            isToday ? "bg-tertiary" : "bg-primary-container"
+            isToday ? "bg-green-500" : "bg-primary-container"
           }`}
         />
         <span
-          className={`relative inline-flex rounded-full h-2 w-2 ${
-            isToday ? "bg-tertiary" : "bg-primary"
+          className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+            isToday ? "bg-green-500" : "bg-primary"
           }`}
         />
       </span>
-      <span className="text-label-sm font-display font-semibold text-on-surface leading-snug">
-        {isToday ? "OPD Today" : `Next OPD: ${label}`}
-        &nbsp;—&nbsp;
-        {clinicName}&nbsp;•&nbsp;
-        <strong className={isToday ? "text-tertiary" : "text-primary"}>{hours}</strong>
+      <span className="text-label-sm font-display font-medium text-on-surface-variant tracking-wide leading-none pt-[1px] truncate min-w-0">
+        <span className="whitespace-nowrap">
+          {isToday ? "OPD Today" : `Next OPD: ${label}`}
+          <span className="opacity-50 mx-1.5">|</span>
+          <span className="font-semibold text-on-surface">{clinicName}</span>
+          <span className="opacity-50 mx-1.5">•</span>
+          <strong className={isToday ? "text-green-600 font-bold" : "text-primary font-bold"}>{hours}</strong>
+        </span>
       </span>
     </div>
   );

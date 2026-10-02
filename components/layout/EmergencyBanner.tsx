@@ -1,4 +1,4 @@
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 export default function EmergencyBanner() {
   return (

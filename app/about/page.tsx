@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 export const metadata: Metadata = {
   title: `About ${doctor.name}`,
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="flex flex-col w-full pb-28 md:pb-0">
+    <div className="flex flex-col w-full" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1rem)' }}>
 
       {/* ── HERO ──── */}
       <section className="relative overflow-hidden bg-surface py-space-xl">
@@ -33,9 +33,10 @@ export default function AboutPage() {
                   height={288}
                   className="relative z-10 w-full h-full object-cover object-top rounded-full shadow-xl p-1"
                 />
-                <div className="absolute -bottom-2 right-2 z-20 flex items-center gap-1 bg-surface-container-lowest py-2 px-3 rounded-full shadow-card">
-                  <span className="material-symbols-outlined text-[14px] text-tertiary material-symbols-filled">verified</span>
-                  <span className="text-label-sm font-display font-bold text-on-surface">NMC {doctor.nmc}</span>
+                {/* Verified badge — stays in the bottom-right quadrant, never clips down */}
+                <div className="absolute bottom-1 right-1 z-20 flex items-center gap-1 bg-surface-container-lowest py-1.5 px-2.5 rounded-full shadow-card">
+                  <span className="material-symbols-outlined text-[13px] text-tertiary material-symbols-filled">verified</span>
+                  <span className="text-[11px] font-display font-bold text-on-surface whitespace-nowrap">NMC {doctor.nmc}</span>
                 </div>
               </div>
               <div className="flex flex-col w-full gap-space-xs max-w-xs">
@@ -59,13 +60,26 @@ export default function AboutPage() {
               </div>
               <p className="text-body-lg text-secondary leading-relaxed">{doctor.aboutBio.p1}</p>
               <p className="text-body-md text-secondary leading-relaxed">{doctor.aboutBio.p2}</p>
-              {/* Credential pills */}
+              {/* Credential pills — clamp to reasonable sizes on mobile */}
               <div className="flex flex-wrap gap-space-xs">
                 {doctor.credentialPills.map((cred) => (
-                  <span key={cred} className="inline-flex items-center gap-1 px-space-md py-1.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm font-display font-semibold shadow-card">
-                    <span className="material-symbols-outlined text-[12px] text-primary">verified</span>{cred}
+                  <span key={cred} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-[11px] sm:text-label-sm font-display font-semibold shadow-card max-w-full">
+                    <span className="material-symbols-outlined text-[12px] text-primary shrink-0">verified</span>
+                    <span className="truncate">{cred}</span>
                   </span>
                 ))}
+              </div>
+              
+              {/* Memberships merged here */}
+              <div className="mt-space-sm">
+                <div className="text-label-sm font-display font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Professional Memberships</div>
+                <div className="flex flex-wrap gap-space-xs">
+                  {doctor.memberships.map((m) => (
+                    <span key={m.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest text-on-surface text-[11px] sm:text-label-sm font-display font-semibold shadow-card border border-surface-container">
+                      <span className="text-primary">{m.name}</span> <span className="text-outline-variant font-sans px-0.5">•</span> <span className="text-on-surface-variant font-normal truncate max-w-[200px] sm:max-w-none">{m.full}</span>
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -77,13 +91,13 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-margin">
           <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Academic Journey</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Education &amp; Qualifications</h2>
-          <div className="relative flex flex-col gap-space-md pl-6 sm:pl-space-xl">
+          <div className="relative flex flex-col gap-space-md pl-8 sm:pl-space-xl">
             {/* Timeline line */}
-            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
+            <div className="absolute left-[10px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
             {doctor.education.map((edu, i) => (
               <div key={i} className="relative flex gap-space-md sm:gap-space-lg items-start">
-                {/* Dot */}
-                <div className="absolute -left-6 sm:-left-space-xl w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface-container-low flex items-center justify-center shrink-0 mt-1">
+                {/* Dot — centered on the vertical line at left:[10px] */}
+                <div className="absolute -left-8 sm:-left-10 top-2 w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface-container-low flex items-center justify-center shrink-0">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <div className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex-1">
@@ -109,11 +123,11 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-margin">
           <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">Clinical Career</div>
           <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Professional Experience</h2>
-          <div className="relative flex flex-col gap-space-md pl-6 sm:pl-space-xl">
-            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
+          <div className="relative flex flex-col gap-space-md pl-8 sm:pl-space-xl">
+            <div className="absolute left-[10px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary to-primary-container opacity-30 rounded-full" />
             {doctor.experience_timeline.map((exp, i) => (
               <div key={i} className="relative flex gap-space-md sm:gap-space-lg items-start">
-                <div className="absolute -left-6 sm:-left-space-xl w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface flex items-center justify-center shrink-0 mt-1">
+                <div className="absolute -left-8 sm:-left-10 top-2 w-[22px] h-[22px] rounded-full bg-primary-container border-4 border-surface flex items-center justify-center shrink-0">
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 </div>
                 <div className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex-1">
@@ -134,27 +148,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── MEMBERSHIPS ──── */}
-      <section className="py-space-xl bg-surface-container-low">
-        <div className="max-w-5xl mx-auto px-margin">
-          <div className="text-primary text-label-sm font-display font-semibold uppercase tracking-wider mb-1">International &amp; National Bodies</div>
-          <h2 className="text-headline-md font-display font-bold text-on-surface tracking-tight mb-space-lg">Professional Memberships</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
-            {doctor.memberships.map((m) => (
-              <div key={m.name} className="bg-surface-container-lowest rounded-lg p-space-md shadow-card flex items-start gap-space-md hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300">
-                <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-display font-extrabold text-label-md shrink-0">
-                  {m.name.slice(0, 1)}
-                </div>
-                <div>
-                  <span className="text-label-lg font-display font-extrabold text-primary block">{m.name}</span>
-                  <span className="text-body-sm text-on-surface block">{m.full}</span>
-                  <span className="text-label-sm text-on-surface-variant">{m.country}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* ── HOSPITAL AFFILIATIONS ──── */}
       <section className="py-space-xl bg-surface">
@@ -175,18 +169,28 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── CARE PHILOSOPHY ──── */}
-      <section className="py-space-xl bg-surface-container-low">
+      {/* ── FINAL CTA ────────────────────────────────────────────── */}
+      <section className="py-space-xl bg-surface-container-low" aria-label="Book your consultation">
         <div className="max-w-4xl mx-auto px-margin text-center">
-          <span className="material-symbols-outlined text-[48px] text-primary-container material-symbols-filled">format_quote</span>
-          <blockquote className="text-[19px] sm:text-headline-md font-display font-bold text-on-surface leading-snug mt-space-sm mb-space-xl">
-            {doctor.philosophy}
-          </blockquote>
-          <Link href="/book" className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[14px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan-sm hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]">
-            Book a Consultation <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-          </Link>
+          <div className="bg-primary-container/10 rounded-3xl p-8 sm:p-12 border border-primary-container/20">
+            <h2 className="text-headline-md font-display font-extrabold text-on-surface mb-space-sm">
+              Ready to consult with {doctor.name}?
+            </h2>
+            <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-space-lg">
+              Choose an in-person clinic visit or secure video telehealth from the comfort of your home.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-space-md">
+              <Link
+                href="/book"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-space-xs px-space-xl py-[16px] rounded-full bg-primary text-on-primary text-label-lg font-display font-bold shadow-glow-cyan hover:opacity-95 active:scale-[0.98] transition-all"
+              >
+                Book Appointment <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
+
     </div>
   );
 }

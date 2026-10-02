@@ -20,7 +20,7 @@ export default function ScrollToTop() {
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Scroll to top"
-      className="fixed bottom-24 right-4 md:bottom-8 md:right-6 z-40 w-11 h-11 rounded-full bg-surface-container-lowest shadow-card-hover border border-outline-variant text-primary flex items-center justify-center transition-all duration-300 hover:bg-primary hover:text-on-primary hover:shadow-glow-cyan-sm hover:-translate-y-0.5 animate-fade-in"
+      className="fixed bottom-[84px] lg:bottom-8 right-4 z-40 w-11 h-11 rounded-full bg-surface-container-lowest shadow-card-hover border border-outline-variant text-primary flex items-center justify-center transition-all duration-300 hover:bg-primary hover:text-on-primary hover:shadow-glow-cyan-sm hover:-translate-y-0.5 animate-fade-in"
     >
       <span className="material-symbols-outlined text-[22px]">arrow_upward</span>
     </button>

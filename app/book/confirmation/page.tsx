@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import QRCode from "react-qr-code";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 interface BookingData {
@@ -59,7 +59,7 @@ export default function BookConfirmationPage() {
   const displayTime = booking?.time ?? "—";
 
   return (
-    <div className="min-h-screen bg-surface-container-low flex items-start justify-center py-space-xl px-margin pb-28 md:pb-space-xl">
+    <div className="min-h-screen bg-surface-container-low flex items-start justify-center py-space-xl px-margin" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1.5rem)' }}>
       <div className="w-full max-w-sm flex flex-col gap-space-md">
 
         {/* Confirmed badge */}
@@ -112,7 +112,7 @@ export default function BookConfirmationPage() {
               </div>
               <div>
                 <div className="text-headline-sm font-display font-bold text-on-surface">{doctor.name}</div>
-                <div className="text-body-sm text-on-surface-variant">MD, DM (Cardiology), FSCAI</div>
+                <div className="text-body-sm text-on-surface-variant line-clamp-1">{doctor.qualifications}</div>
                 <div className="text-label-sm text-primary">{doctor.title}</div>
               </div>
             </div>
@@ -175,23 +175,35 @@ export default function BookConfirmationPage() {
           </div>
         </div>
 
-        {/* Action buttons */}
+        {/* Action buttons — 2-col grid, orphan last button goes full-width */}
         <div className="grid grid-cols-2 gap-space-xs">
           {!clinic.isVirtual && (
-            <a href={buildMapsUrl(clinic)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
+            <a href={buildMapsUrl(clinic)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all min-h-[72px]">
               <span className="material-symbols-outlined text-[22px] text-primary">directions</span>
               <span className="text-label-sm font-display font-semibold text-on-surface">Get Directions</span>
             </a>
           )}
-          <a href={buildCalendarUrl({ ...booking!, day: displayDay, time: displayTime, token: displayToken, bookingId: "" }, clinic)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
+          <a href={buildCalendarUrl({ ...booking!, day: displayDay, time: displayTime, token: displayToken, bookingId: "" }, clinic)} target="_blank" rel="noopener noreferrer" className={`flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all min-h-[72px] ${clinic.isVirtual ? "col-span-2" : ""}` }>
             <span className="material-symbols-outlined text-[22px] text-primary">event_add</span>
             <span className="text-label-sm font-display font-semibold text-on-surface">Add to Calendar</span>
           </a>
-          <a href={buildWhatsAppUrl({ purpose: "followup" })} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
-            <span className="material-symbols-outlined text-[22px] text-tertiary">chat</span>
+          <a
+            href={buildWhatsAppUrl({
+              purpose: "confirmation",
+              token: displayToken,
+              patientName: booking?.name,
+              clinic: clinic.shortName,
+              date: displayDay,
+              time: displayTime,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all min-h-[72px]"
+          >
+            <span className="material-symbols-outlined text-[22px] text-[#25D366]">chat</span>
             <span className="text-label-sm font-display font-semibold text-on-surface">WhatsApp Desk</span>
           </a>
-          <a href={buildCallUrl()} className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all">
+          <a href={buildCallUrl()} className="flex flex-col items-center justify-center gap-1 py-space-sm bg-surface-container-lowest rounded-lg shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all min-h-[72px]">
             <span className="material-symbols-outlined text-[22px] text-primary">call</span>
             <span className="text-label-sm font-display font-semibold text-on-surface">Call Clinic</span>
           </a>
@@ -217,8 +229,8 @@ export default function BookConfirmationPage() {
           ))}
         </div>
 
-        <Link href="/appointment" className="w-full flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
-          Reschedule or Cancel <span className="material-symbols-outlined text-[18px]">settings</span>
+        <Link href="/book" className="w-full flex items-center justify-center gap-space-xs py-[14px] rounded-full bg-surface-container text-primary text-label-md font-display font-semibold hover:bg-surface-container-high transition-all">
+          Book Another Appointment <span className="material-symbols-outlined text-[18px]">calendar_month</span>
         </Link>
       </div>
     </div>

@@ -1,35 +1,60 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Consulting Locations & Timings",
-  description: `${doctor.name} consults at ${doctor.clinics.length} locations across Delhi NCR. Greater Kailash-1, Max Saket, Medanta Gurugram, and Virtual Video OPD.`,
+  description: `${doctor.name} consults across ${doctor.locationDesc}, including ${doctor.clinics.filter(c => !c.isVirtual).map(c => c.shortName).join(" & ")}, plus Daily Video Telehealth.`,
   alternates: { canonical: "/locations" },
 };
 
-// JS getDay(): 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-const WEEKLY_SCHEDULE = [
-  { day: "MON", clinic: "Max Saket",        hours: "10am–1:30pm",   dayIndex: 1 },
-  { day: "TUE", clinic: "GK-1 Clinic",      hours: "4:30pm–8pm",    dayIndex: 2 },
-  { day: "WED", clinic: "Max Saket",        hours: "10am–1:30pm",   dayIndex: 3 },
-  { day: "THU", clinic: "GK-1 Clinic",      hours: "4:30pm–8pm",    dayIndex: 4 },
-  { day: "FRI", clinic: "Max Saket",        hours: "10am–1:30pm",   dayIndex: 5 },
-  { day: "SAT", clinic: "GK-1 / Medanta",  hours: "Alt. Schedule", dayIndex: 6 },
-  { day: "SUN", clinic: "Emergency Only",   hours: "Max Saket ER",  dayIndex: 0, isEmergency: true },
-] as const;
+const DAY_DEFS = [
+  { day: "MON", dayIndex: 1 },
+  { day: "TUE", dayIndex: 2 },
+  { day: "WED", dayIndex: 3 },
+  { day: "THU", dayIndex: 4 },
+  { day: "FRI", dayIndex: 5 },
+  { day: "SAT", dayIndex: 6 },
+  { day: "SUN", dayIndex: 0 },
+];
 
 export default function LocationsPage() {
-  // Server-side today detection — correct every time the page is visited
   const todayIndex = new Date().getDay();
-  const todayEntry = WEEKLY_SCHEDULE.find((s) => s.dayIndex === todayIndex);
-  const todayLabel = todayEntry && !("isEmergency" in todayEntry && todayEntry.isEmergency)
+
+  // Dynamically compute schedule from site.config.ts clinics
+  const weeklySchedule = DAY_DEFS.map((d) => {
+    // Find active physical clinic for this day
+    const physicalClinic = doctor.clinics.find(
+      (c) => !c.isVirtual && c.daysArray.includes(d.dayIndex)
+    );
+
+    if (physicalClinic) {
+      return {
+        day: d.day,
+        dayIndex: d.dayIndex,
+        clinic: physicalClinic.shortName,
+        hours: physicalClinic.hours,
+        isEmergency: false,
+      };
+    }
+
+    return {
+      day: d.day,
+      dayIndex: d.dayIndex,
+      clinic: "Emergency Only",
+      hours: "Call 102 / 108",
+      isEmergency: true,
+    };
+  });
+
+  const todayEntry = weeklySchedule.find((s) => s.dayIndex === todayIndex);
+  const todayLabel = todayEntry && !todayEntry.isEmergency
     ? `OPD Today — ${todayEntry.clinic}`
     : "Emergency Only Today — Call 102";
 
   return (
-    <div className="flex flex-col w-full pb-28 md:pb-0">
+    <div className="flex flex-col w-full" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1rem)' }}>
 
       {/* ── HEADER ─────────────────────────────────────────── */}
       <section className="bg-surface py-space-xl">
@@ -45,44 +70,48 @@ export default function LocationsPage() {
             Consulting Locations &amp; Timings
           </h1>
           <p className="text-body-lg text-secondary max-w-2xl">
-            {doctor.name} consults at {doctor.clinics.length} locations across South Delhi &amp; Gurugram, plus Daily Video Telehealth.
+            {doctor.name} consults across {doctor.locationDesc} at verified hospital and private OPD desks, plus Daily Video Telehealth.
           </p>
 
           {/* Dynamic weekly day roster */}
-          <div className="mt-space-lg overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-pl-4">
-            <div className="flex gap-space-xs min-w-max pb-1">
-              {WEEKLY_SCHEDULE.map((d) => {
-                const isToday = d.dayIndex === todayIndex;
-                const isEmergency = "isEmergency" in d && d.isEmergency;
-                return (
-                  <div
-                    key={d.day}
-                    className={`shrink-0 snap-start w-28 p-3 rounded-DEFAULT flex flex-col items-center text-center gap-0.5 transition-all ${
-                      isEmergency
-                        ? "bg-error-container text-on-error-container"
-                        : isToday
-                        ? "bg-inverse-surface text-inverse-on-surface shadow-md ring-2 ring-primary-container"
-                        : "bg-surface-container text-on-surface"
-                    }`}
-                  >
-                    <span className={`text-label-sm font-display font-bold ${isToday ? "text-primary-fixed-dim" : ""}`}>
-                      {d.day}{isToday ? " · TODAY" : ""}
-                    </span>
-                    <span className={`text-label-md font-display font-extrabold leading-tight ${isToday ? "text-inverse-on-surface" : ""}`}>
-                      {d.clinic}
-                    </span>
-                    <span className={`text-label-sm ${isToday ? "text-inverse-on-surface/80" : "text-on-surface-variant"}`}>
-                      {d.hours}
-                    </span>
-                    {isToday && (
-                      <span className="mt-0.5 inline-flex items-center gap-0.5 text-label-sm text-tertiary-fixed font-display font-bold">
-                        <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed animate-pulse" />Live
+          <div className="mt-space-lg relative">
+            <div className="overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-pl-4">
+              <div className="flex gap-space-xs min-w-max pb-1 pr-8">
+                {weeklySchedule.map((d) => {
+                  const isToday = d.dayIndex === todayIndex;
+                  const isEmergency = d.isEmergency;
+                  return (
+                    <div
+                      key={d.day}
+                      className={`shrink-0 snap-start w-28 p-3 rounded-DEFAULT flex flex-col items-center text-center gap-0.5 transition-all ${
+                        isEmergency
+                          ? "bg-error-container/60 text-on-error-container"
+                          : isToday
+                          ? "bg-inverse-surface text-inverse-on-surface shadow-md ring-2 ring-primary-container"
+                          : "bg-surface-container text-on-surface"
+                      }`}
+                    >
+                      <span className={`text-label-sm font-display font-bold ${isToday ? "text-primary-fixed-dim" : ""}`}>
+                        {d.day}{isToday ? " · TODAY" : ""}
                       </span>
-                    )}
-                  </div>
-                );
-              })}
+                      <span className={`text-label-md font-display font-extrabold leading-tight ${isToday ? "text-inverse-on-surface" : ""}`}>
+                        {d.clinic}
+                      </span>
+                      <span className={`text-label-sm ${isToday ? "text-inverse-on-surface/80" : "text-on-surface-variant"}`}>
+                        {d.hours}
+                      </span>
+                      {isToday && !isEmergency && (
+                        <span className="mt-0.5 inline-flex items-center gap-0.5 text-label-sm text-tertiary-fixed font-display font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed animate-pulse" />Live
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+            {/* Fade-out right edge to signal scroll */}
+            <div className="absolute right-0 top-0 bottom-1 w-12 bg-gradient-to-l from-surface to-transparent pointer-events-none" />
           </div>
         </div>
       </section>
@@ -151,7 +180,7 @@ export default function LocationsPage() {
                         Services
                       </span>
                       <div className="flex flex-wrap gap-1 mt-0.5">
-                        {clinic.diagnostics.slice(0, 2).map((d) => (
+                        {clinic.diagnostics.map((d) => (
                           <span key={d} className="text-label-sm bg-surface-container px-1.5 py-0.5 rounded-full text-on-surface-variant">{d}</span>
                         ))}
                       </div>
@@ -189,11 +218,11 @@ export default function LocationsPage() {
           </div>
 
           {/* Coordinator help */}
-          <div className="mt-space-xl bg-surface-container-lowest rounded-xl shadow-card p-4 sm:p-space-lg flex flex-col sm:flex-row items-center gap-space-md">
-            <div className="w-14 h-14 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[28px]">support_agent</span>
+          <div className="mt-space-xl bg-surface-container-lowest rounded-xl shadow-card p-4 sm:p-space-lg flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+            <div className="w-12 h-12 rounded-full bg-primary-container/20 text-primary flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[26px]">support_agent</span>
             </div>
-            <div className="flex-1 text-center sm:text-left">
+            <div className="flex-1">
               <p className="text-title-md font-display font-bold text-on-surface">Unsure which location to choose?</p>
               <p className="text-body-sm text-on-surface-variant mt-0.5">
                 Chat with <strong className="text-on-surface">{doctor.coordinator.name}</strong>, {doctor.name}&apos;s Care Coordinator. She will recommend the best clinic for your condition and schedule.
@@ -204,7 +233,7 @@ export default function LocationsPage() {
                 href={buildWhatsAppUrl({ purpose: "inquiry" })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-space-lg py-3 rounded-full bg-tertiary text-on-tertiary text-label-md font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
+                className="w-full sm:w-auto flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-space-lg py-3 rounded-full bg-[#25D366] text-white text-label-md font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
               >
                 <span className="material-symbols-outlined text-[18px]">chat</span>
                 WhatsApp {doctor.coordinator.name}

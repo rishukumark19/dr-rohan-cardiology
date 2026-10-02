@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-margin py-space-xl pb-28 md:pb-space-xl">
+    <div className="min-h-screen bg-surface flex items-center justify-center px-margin py-space-xl" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1.5rem)' }}>
       <div className="max-w-md w-full text-center flex flex-col items-center gap-space-lg">
         <div className="relative">
           <div className="text-[96px] sm:text-[120px] font-display font-extrabold text-primary leading-none select-none opacity-10">404</div>

@@ -1,6 +1,6 @@
 export default function BookingLoading() {
   return (
-    <div className="min-h-screen bg-surface-container-low pb-24 md:pb-0">
+    <div className="min-h-screen bg-surface-container-low" style={{ paddingBottom: 'calc(var(--mobile-bar-height, 0px) + 1rem)' }}>
       <div className="max-w-2xl mx-auto px-margin py-space-xl">
         {/* Progress skeleton */}
         <div className="mb-space-lg flex items-center gap-space-xs">

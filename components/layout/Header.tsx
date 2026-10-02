@@ -1,22 +1,58 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { doctor } from "@/config/doctor";
+import { useState, useEffect, useRef } from "react";
+import { site as doctor } from "@/config/site.config";
 import { buildCallUrl, buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const navLinks = [
   { href: "/about", label: "About", path: "/about" },
   { href: "/locations", label: "Locations", path: "/locations" },
-  { href: "/book", label: "Consultation", path: "/book" },
-  { href: "/faq", label: "FAQs", path: "/faq" },
-  { href: "/resources", label: "Resources", path: "/resources" },
-  { href: "/reviews", label: "Reviews", path: "/reviews" },
 ];
 
 export default function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLButtonElement>(null);
+
+  // Close drawer on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // Focus trap inside drawer
+  useEffect(() => {
+    if (!menuOpen) return;
+    // Focus the close button when drawer opens
+    firstFocusableRef.current?.focus();
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+      }
+      if (e.key === "Tab" && drawerRef.current) {
+        const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button, input, [tabindex]:not([tabindex="-1"])'
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
 
   return (
     <>
@@ -24,15 +60,15 @@ export default function Header() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-nav">
         <div className="h-20 max-w-7xl mx-auto px-margin flex items-center justify-between gap-space-md">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-space-sm group flex-shrink-0" aria-label="Homepage">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-glow-cyan-sm transition-transform duration-300 group-hover:scale-105">
+          <Link href="/" className="flex items-center gap-space-sm group flex-shrink-0 min-w-0" aria-label="Homepage">
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-glow-cyan-sm transition-transform duration-300 group-hover:scale-105 shrink-0">
               <span className="material-symbols-outlined text-[22px]">cardiology</span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-display text-[13px] font-bold uppercase tracking-widest text-on-surface leading-none">
+            <div className="flex flex-col min-w-0">
+              <span className="font-display text-[13px] font-bold uppercase tracking-widest text-on-surface leading-none truncate">
                 {doctor.shortName.toUpperCase()}
               </span>
-              <span className="font-display text-[10px] font-semibold uppercase tracking-widest text-primary mt-0.5">
+              <span className="font-display text-[10px] font-semibold uppercase tracking-widest text-primary mt-0.5 truncate">
                 {doctor.speciality} • {doctor.institution}
               </span>
             </div>
@@ -77,11 +113,11 @@ export default function Header() {
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
             </Link>
 
-            {/* Mobile hamburger */}
+            {/* Mobile hamburger — shown on <lg, not shown on larger screens where nav is visible */}
             <button
               className="lg:hidden w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface"
               onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
+              aria-label="Open navigation menu"
               aria-expanded={menuOpen}
               aria-controls="mobile-drawer"
             >
@@ -91,31 +127,34 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer — full-screen overlay with slide-in panel */}
       {menuOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div className="fixed inset-0 z-[100] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-inverse-surface/60 backdrop-blur-sm"
             onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
           />
           {/* Drawer — slides in from the right */}
           <div
             id="mobile-drawer"
-            className="absolute right-0 top-0 bottom-0 w-[85vw] max-w-xs bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe"
+            ref={drawerRef}
+            className="absolute right-0 top-0 bottom-0 w-[85vw] max-w-sm bg-surface-container-lowest shadow-2xl flex flex-col pt-safe pb-safe"
             style={{ animation: "slideInRight 0.25s ease-out" }}
           >
             {/* Drawer header */}
             <div className="flex items-center justify-between px-space-md py-space-md border-b border-outline-variant">
-              <div className="flex items-center gap-space-sm">
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+              <div className="flex items-center gap-space-sm min-w-0">
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0">
                   <span className="material-symbols-outlined text-[18px]">cardiology</span>
                 </div>
-                <span className="font-display font-bold text-on-surface text-label-lg">{doctor.shortName}</span>
+                <span className="font-display font-bold text-on-surface text-label-lg truncate">{doctor.shortName}</span>
               </div>
               <button
+                ref={firstFocusableRef}
                 onClick={() => setMenuOpen(false)}
-                className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface"
+                className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface shrink-0 ml-2"
                 aria-label="Close menu"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
@@ -123,9 +162,10 @@ export default function Header() {
             </div>
 
             {/* Nav links */}
-            <nav className="flex flex-col gap-1 px-space-sm py-space-md flex-1 overflow-y-auto">
-              {navLinks.map((link) => {
-                const isActive = pathname === link.path || (link.path !== "/" && pathname.startsWith(link.path));
+            <nav className="flex flex-col gap-1 px-space-sm py-space-md flex-1 overflow-y-auto" aria-label="Mobile navigation">
+              {[{ href: "/", label: "Home", path: "/" }, ...navLinks].map((link) => {
+                const isHome = link.href === "/";
+                const isActive = isHome ? pathname === "/" : (pathname === link.path || pathname.startsWith(link.path));
                 return (
                   <Link
                     key={link.href}
@@ -136,6 +176,7 @@ export default function Header() {
                         ? "bg-primary-container text-on-primary-container"
                         : "text-on-surface hover:bg-surface-container"
                     }`}
+                    aria-current={isActive ? "page" : undefined}
                   >
                     {link.label}
                   </Link>
@@ -157,7 +198,7 @@ export default function Header() {
                 href={buildWhatsAppUrl({ purpose: "inquiry" })}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-space-sm py-3 rounded-full bg-tertiary text-on-tertiary text-label-lg font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
+                className="flex items-center justify-center gap-space-sm py-3 rounded-full bg-[#25D366] text-white text-label-lg font-display font-bold hover:opacity-90 active:scale-[0.98] transition-all min-h-[48px]"
               >
                 <span className="material-symbols-outlined text-[20px]">chat</span>
                 WhatsApp Desk

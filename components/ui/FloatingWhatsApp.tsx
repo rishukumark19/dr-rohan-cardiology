@@ -1,6 +1,6 @@
 "use client";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-import { doctor } from "@/config/doctor";
+import { site as doctor } from "@/config/site.config";
 
 export default function FloatingWhatsApp() {
   return (
@@ -9,10 +9,11 @@ export default function FloatingWhatsApp() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with our WhatsApp desk"
-      className="hidden md:flex fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-tertiary text-on-tertiary items-center justify-center shadow-card-hover hover:scale-110 active:scale-95 transition-transform duration-200 group"
+      // On desktop: fixed bottom-8. On mobile: hidden (bottom bar has WhatsApp already)
+      className="hidden md:flex fixed bottom-8 right-8 z-50 w-14 h-14 rounded-full bg-[#25D366] text-white items-center justify-center shadow-card-hover hover:scale-110 active:scale-95 transition-transform duration-200 group"
     >
       {/* Pulse ring */}
-      <span className="absolute inset-0 rounded-full bg-tertiary animate-ping opacity-30" />
+      <span className="absolute inset-0 rounded-full bg-[#25D366] animate-ping opacity-30" />
       <span className="material-symbols-outlined text-[28px] relative z-10">chat</span>
 
       {/* Tooltip */}

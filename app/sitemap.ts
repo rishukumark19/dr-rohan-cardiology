@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { site as doctor } from "@/config/site.config";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = doctor.seo.domain;
   const now = new Date();

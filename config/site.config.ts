@@ -18,7 +18,7 @@ export const site = {
   speciality: "Cardiology",
   institution: "AIIMS New Delhi",
   nmc: "#54219",
-  photo: "/doctor-photo.jpg",
+  photo: process.env.GITHUB_ACTIONS === 'true' ? "/dr-rohan-cardiology/doctor-photo.jpg" : "/doctor-photo.jpg",
   experience: "15+",
   experienceYears: 15,
   heroTagline: "Unhurried 20-minute consultations in interventional cardiac care.",

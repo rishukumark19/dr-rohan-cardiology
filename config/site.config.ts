@@ -245,7 +245,7 @@ export const site = {
   seo: {
     siteName: "Dr. Rohan Sharma — Interventional Cardiologist, New Delhi",
     description: "Book a consultation with Dr. Rohan Sharma, Senior Interventional Cardiologist (AIIMS New Delhi).",
-    domain: "https://drrohansharma.in",
+    domain: "https://crosstech.in/dr-rohan-cardiology",
     keywords: "cardiologist new delhi, interventional cardiologist delhi, angioplasty specialist, heart specialist delhi",
     twitterHandle: "",
   },
